@@ -1,6 +1,5 @@
 import { Outlet } from "react-router-dom";
 import { TopNav } from "./TopNav";
-import { Sidebar } from "./Sidebar";
 
 export function Layout({ currentUser, onLogout }) {
   return (
@@ -11,11 +10,10 @@ export function Layout({ currentUser, onLogout }) {
       </a>
 
       <TopNav currentUser={currentUser} onLogout={onLogout} />
-      <Sidebar currentUser={currentUser} />
       <main
         id="main-content"
         tabIndex="-1"
-        className="pt-16 md:pl-64 transition-all duration-300"
+        className="pt-16 transition-all duration-300"
       >
         <div className="p-4 sm:p-6 lg:p-8 mx-auto max-w-full">
           <Outlet />

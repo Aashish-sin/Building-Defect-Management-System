@@ -81,7 +81,7 @@ export function MobileNav({ currentUser }) {
         }`}
         aria-label="Mobile navigation"
       >
-        <div className="p-4 space-y-2">
+        <div className="p-4 flex flex-wrap gap-2">
           {navItems.map((item) => {
             if (item.adminOnly && !isAdmin) return null;
             if (
@@ -99,7 +99,7 @@ export function MobileNav({ currentUser }) {
               <Link
                 key={item.path}
                 to={item.path}
-                className={`flex items-center gap-4 px-4 py-3 rounded-md border transition-colors ${
+                className={`inline-flex items-center gap-3 px-4 py-2 rounded-md border transition-colors ${
                   isActive
                     ? "bg-gray-100 text-gray-900 border-gray-800"
                     : "text-gray-700 border-gray-300 hover:bg-gray-50"

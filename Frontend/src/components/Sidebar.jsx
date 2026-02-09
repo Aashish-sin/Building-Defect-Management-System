@@ -41,7 +41,7 @@ export function Sidebar({ currentUser }) {
 
   return (
     <aside className="hidden md:block fixed left-0 top-16 w-64 h-[calc(100vh-4rem)] bg-white border-r-2 border-gray-300 overflow-y-auto">
-      <nav className="p-4 space-y-2">
+      <nav className="p-4 flex flex-wrap gap-2">
         {navItems.map((item) => {
           if (item.adminOnly && !isAdmin) return null;
           if (
@@ -59,7 +59,7 @@ export function Sidebar({ currentUser }) {
             <Link
               key={item.path}
               to={item.path}
-              className={`flex items-center gap-4 px-4 py-3 rounded-md border transition-colors ${
+              className={`inline-flex items-center gap-3 px-4 py-2 rounded-md border transition-colors ${
                 isActive
                   ? "bg-gray-100 text-gray-900 border-gray-800"
                   : "text-gray-700 border-gray-300 hover:bg-gray-50 hover:text-gray-900"

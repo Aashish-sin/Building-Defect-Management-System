@@ -8,6 +8,7 @@ export function Modal({
   title,
   children,
   footer,
+  showClose = true,
   size = "md",
 }) {
   const modalRef = useRef(null);
@@ -71,14 +72,16 @@ export function Modal({
           <h2 id="modal-title" className="text-xl font-semibold text-gray-900">
             {title}
           </h2>
-          <button
-            ref={closeButtonRef}
-            onClick={onClose}
-            className="p-1 rounded-md text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-400"
-            aria-label="Close dialog"
-          >
-            <X className="w-5 h-5" />
-          </button>
+          {showClose && (
+            <button
+              ref={closeButtonRef}
+              onClick={onClose}
+              className="p-1 rounded-md text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-400"
+              aria-label="Close dialog"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          )}
         </div>
 
         {/* Content */}
@@ -113,10 +116,18 @@ export function ConfirmDialog({
       size="sm"
       footer={
         <>
-          <Button variant="ghost" onClick={onClose}>
+          <Button
+            variant="ghost"
+            onClick={onClose}
+            className="bg-sky-400 text-white border-2 border-sky-500 hover:bg-sky-500"
+          >
             {cancelText}
           </Button>
-          <Button variant={variant} onClick={onConfirm}>
+          <Button
+            variant={variant}
+            onClick={onConfirm}
+            className="bg-sky-400 text-white border-2 border-sky-500 hover:bg-sky-500"
+          >
             {confirmText}
           </Button>
         </>

@@ -162,7 +162,7 @@ export function Users({ currentUser }) {
 
   if (currentUser.role !== "admin") {
     return (
-      <div className="max-w-7xl text-center py-12">
+      <div className="max-w-7xl mx-auto text-center py-12">
         <p className="text-gray-600">
           You don't have permission to access this page.
         </p>
@@ -172,7 +172,7 @@ export function Users({ currentUser }) {
 
   if (loading) {
     return (
-      <div className="max-w-7xl">
+      <div className="max-w-7xl mx-auto">
         <div className="mb-6">
           <div className="h-8 w-24 bg-gray-200 rounded animate-pulse"></div>
         </div>
@@ -183,7 +183,7 @@ export function Users({ currentUser }) {
 
   if (error) {
     return (
-      <div className="max-w-7xl">
+      <div className="max-w-7xl mx-auto">
         <div className="text-center py-12 text-red-600" role="alert">
           {error}
         </div>
@@ -192,52 +192,61 @@ export function Users({ currentUser }) {
   }
 
   return (
-    <div className="max-w-7xl">
+    <div className="max-w-7xl mx-auto">
       <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <h1 className="text-2xl font-semibold text-gray-900">Users</h1>
-        <Button onClick={() => handleOpenModal()}>
+        <Button
+          onClick={() => handleOpenModal()}
+          size="sm"
+          className="bg-sky-400 text-white border-2 border-sky-500 hover:bg-sky-500"
+        >
           <Plus className="w-4 h-4" aria-hidden="true" />
           Add User
         </Button>
       </div>
 
       {/* Desktop Table */}
-      <div className="hidden md:block wf-panel overflow-hidden">
+      <div className="hidden md:block wf-panel p-0 bg-white rounded-lg overflow-hidden w-full">
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="wf-table-head">
+            <thead className="bg-gray-100 border-b border-gray-200">
               <tr>
                 <th
                   scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  className="px-6 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider"
                 >
                   User
                 </th>
                 <th
                   scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  className="px-6 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider"
                 >
                   Email
                 </th>
                 <th
                   scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  className="px-6 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider"
                 >
                   Role
                 </th>
                 <th
                   scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  className="px-6 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider"
                 >
                   Actions
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200">
-              {users.map((user) => (
-                <tr key={user.id} className="wf-table-row focus-within:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center gap-3">
+            <tbody>
+              {users.map((user, index) => (
+                <tr
+                  key={user.id}
+                  className={
+                    index === users.length - 1 ? "" : "border-b border-gray-200"
+                  }
+                >
+                  <td className="px-6 py-4 text-center">
+                    <div className="flex items-center justify-center gap-3">
                       <UserCircle
                         className="w-8 h-8 text-gray-400"
                         aria-hidden="true"
@@ -247,22 +256,22 @@ export function Users({ currentUser }) {
                       </span>
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <td className="px-6 py-4 text-center">
+                    <div className="flex items-center justify-center gap-2 text-sm text-gray-600">
                       <Mail className="w-4 h-4" aria-hidden="true" />
                       {user.email}
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  <td className="px-6 py-4 text-center">
                     <Badge variant={getRoleBadgeVariant(user.role)}>
                       {formatRole(user.role)}
                     </Badge>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm">
-                    <div className="flex gap-2">
+                  <td className="px-6 py-4 text-center text-sm">
+                    <div className="inline-flex gap-2">
                       <button
                         onClick={() => handleOpenModal(user)}
-                        className="inline-flex items-center gap-1 px-2 py-1 text-gray-700 border border-gray-300 hover:bg-gray-100 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-gray-400"
+                        className="inline-flex items-center gap-1 px-2 py-1 text-white bg-sky-400 border-2 border-sky-500 hover:bg-sky-500 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-sky-300"
                         aria-label={`Edit ${user.name}`}
                       >
                         <Edit2 className="w-4 h-4" aria-hidden="true" />
@@ -271,7 +280,7 @@ export function Users({ currentUser }) {
                       {user.id !== currentUser.id ? (
                         <button
                           onClick={() => handleDeleteClick(user)}
-                          className="inline-flex items-center gap-1 px-2 py-1 text-red-700 border border-gray-300 hover:bg-gray-100 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-gray-400"
+                          className="inline-flex items-center gap-1 px-2 py-1 text-white bg-sky-400 border-2 border-sky-500 hover:bg-sky-500 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-sky-300"
                           aria-label={`Delete ${user.name}`}
                         >
                           <Trash2 className="w-4 h-4" aria-hidden="true" />
@@ -292,10 +301,7 @@ export function Users({ currentUser }) {
       {/* Mobile Cards */}
       <div className="md:hidden space-y-4">
         {users.map((user) => (
-          <article
-            key={user.id}
-            className="wf-panel-soft p-4"
-          >
+          <article key={user.id} className="wf-panel-soft p-4">
             <div className="flex items-start justify-between mb-3">
               <div className="flex items-center gap-3">
                 <UserCircle
@@ -319,9 +325,8 @@ export function Users({ currentUser }) {
             <div className="flex gap-2 pt-3 border-t border-gray-100">
               <Button
                 size="sm"
-                variant="ghost"
                 onClick={() => handleOpenModal(user)}
-                className="flex-1"
+                className="flex-1 bg-sky-400 text-white border-2 border-sky-500 hover:bg-sky-500"
               >
                 <Edit2 className="w-4 h-4" aria-hidden="true" />
                 Edit
@@ -329,9 +334,8 @@ export function Users({ currentUser }) {
               {user.id !== currentUser.id ? (
                 <Button
                   size="sm"
-                  variant="ghost"
                   onClick={() => handleDeleteClick(user)}
-                  className="flex-1 text-red-600 hover:text-red-800"
+                  className="flex-1 bg-sky-400 text-white border-2 border-sky-500 hover:bg-sky-500"
                 >
                   <Trash2 className="w-4 h-4" aria-hidden="true" />
                   Delete

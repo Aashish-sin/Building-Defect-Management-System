@@ -11,6 +11,9 @@ import {
 import { defectsAPI, buildingsAPI, usersAPI } from "../services/api";
 import { StatusBadge } from "./ui/Badge";
 import { ConfirmDialog } from "./ui/Modal";
+import { Button } from "./ui/Button";
+import { Alert } from "./ui/Alert";
+import { LoadingSpinner } from "./ui/LoadingSpinner";
 import { formatDate } from "../utils/dateFormatter";
 
 const EMPTY_COMMENT_VALUES = {
@@ -56,6 +59,7 @@ export function DefectDetail({ currentUser }) {
     label: "",
     payload: null,
   });
+  const [deleteDefectDialogOpen, setDeleteDefectDialogOpen] = useState(false);
 
   useEffect(() => {
     loadDefect();
@@ -93,7 +97,6 @@ export function DefectDetail({ currentUser }) {
         setCommentValues(latestValues);
         setCommentInput(latestValues);
       } catch (err) {
-        console.warn("Failed to load comments or no comments exist:", err);
         setCommentValues({ ...EMPTY_COMMENT_VALUES });
         setCommentInput({ ...EMPTY_COMMENT_VALUES });
       }
@@ -105,9 +108,7 @@ export function DefectDetail({ currentUser }) {
             defectData.building_id,
           );
           setBuilding(buildingRes.data);
-        } catch (err) {
-          console.warn("Failed to load building details:", err);
-        }
+        } catch (err) {}
       }
 
       // Fetch assigned technician details
@@ -117,18 +118,14 @@ export function DefectDetail({ currentUser }) {
             defectData.assigned_technician_id,
           );
           setAssignee(techRes.data);
-        } catch (err) {
-          console.warn("Failed to load assignee details:", err);
-        }
+        } catch (err) {}
       }
 
       if (role === "admin" || role === "building_executive") {
         try {
           const techsRes = await usersAPI.getTechnicians();
           setTechnicians(techsRes.data);
-        } catch (err) {
-          console.warn("Failed to load technicians list:", err);
-        }
+        } catch (err) {}
       }
     } catch (err) {
       setError(err.response?.data?.message || "Failed to load defect");
@@ -393,24 +390,37 @@ export function DefectDetail({ currentUser }) {
 
   if (loading) {
     return (
-      <div className="max-w-5xl">
-        <div className="text-center py-12">Loading...</div>
+      <div className="max-w-5xl flex items-center justify-center py-12">
+        <div className="text-center">
+          <LoadingSpinner size="lg" className="mx-auto mb-4" />
+          <p className="text-gray-600 font-medium">Loading defect details...</p>
+        </div>
       </div>
     );
   }
 
   if (error && !defect) {
     return (
-      <div className="max-w-5xl">
-        <div className="text-center py-12 text-red-600">{error}</div>
+      <div className="max-w-5xl py-12">
+        <Alert
+          type="error"
+          message={error}
+          className="mb-4"
+          dismissible={false}
+        />
       </div>
     );
   }
 
   if (!defect) {
     return (
-      <div className="max-w-5xl">
-        <div className="text-center py-12">Defect not found</div>
+      <div className="max-w-5xl py-12">
+        <Alert
+          type="warning"
+          message="Defect not found"
+          className="mb-4"
+          dismissible={false}
+        />
       </div>
     );
   }
@@ -432,23 +442,25 @@ export function DefectDetail({ currentUser }) {
           <li className="text-gray-700 font-medium">Defect #{defect.id}</li>
         </ol>
       </nav>
-      <button
+      <Button
+        size="sm"
         onClick={() => navigate("/defects")}
-        className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6 transform transition-transform hover:scale-105 active:scale-95 active:text-gray-900"
+        className="mb-6 bg-sky-400 text-white border-2 border-sky-500 hover:bg-sky-500"
       >
         <ArrowLeft className="w-4 h-4" />
         Back to Defects
-      </button>
+      </Button>
 
       {/* Header */}
       <div className="wf-panel p-6 mb-6">
         {error && (
-          <div
-            className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm"
-            role="alert"
-          >
-            {error}
-          </div>
+          <Alert
+            type="error"
+            message={error}
+            dismissible
+            onClose={() => setError(null)}
+            className="mb-4"
+          />
         )}
         <div className="flex items-start justify-between mb-4">
           <div className="flex-1">
@@ -549,7 +561,7 @@ export function DefectDetail({ currentUser }) {
             <div className="relative group">
               <p className="text-xs font-medium text-gray-600 mb-2 flex justify-between">
                 Initial Report Photo
-                {role === "admin" && (
+                {["admin", "building_executive", "csr"].includes(role) && (
                   <label className="cursor-pointer text-blue-600 hover:text-blue-800 flex items-center gap-1">
                     <Edit2 className="w-3 h-3" /> Edit
                     <input
@@ -565,8 +577,9 @@ export function DefectDetail({ currentUser }) {
                     />
                   </label>
                 )}
-                {["admin", "building_executive"].includes(role) && (
-                  <button
+                {["admin", "building_executive", "csr"].includes(role) && (
+                  <Button
+                    size="xs"
                     type="button"
                     onClick={() =>
                       openDeletePhotoDialog(
@@ -578,10 +591,10 @@ export function DefectDetail({ currentUser }) {
                       )
                     }
                     disabled={!defect.initial_report_image && !defect.image_url}
-                    className="ml-2 inline-flex items-center gap-1 px-2 py-1 text-xs text-red-700 border border-gray-300 rounded-md hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="bg-sky-400 text-white border-2 border-sky-500 hover:bg-sky-500"
                   >
                     Delete
-                  </button>
+                  </Button>
                 )}
               </p>
               {defect.initial_report_image || defect.image_url ? (
@@ -617,8 +630,11 @@ export function DefectDetail({ currentUser }) {
                     />
                   </label>
                 )}
-                {["admin", "building_executive"].includes(role) && (
-                  <button
+                {["admin", "building_executive", "technician"].includes(
+                  role,
+                ) && (
+                  <Button
+                    size="xs"
                     type="button"
                     onClick={() =>
                       openDeletePhotoDialog(
@@ -627,10 +643,10 @@ export function DefectDetail({ currentUser }) {
                       )
                     }
                     disabled={!defect.technician_report_image}
-                    className="ml-2 inline-flex items-center gap-1 px-2 py-1 text-xs text-red-700 border border-gray-300 rounded-md hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="bg-sky-400 text-white border-2 border-sky-500 hover:bg-sky-500"
                   >
                     Delete
-                  </button>
+                  </Button>
                 )}
               </p>
               {defect.technician_report_image ? (
@@ -682,17 +698,17 @@ export function DefectDetail({ currentUser }) {
                   placeholder="Enter contractor name"
                 />
                 <div className="mt-2 flex items-center gap-2">
-                  <button
-                    type="button"
+                  <Button
+                    size="sm"
                     onClick={handleSaveContractorName}
                     disabled={
                       contractorNameInput.trim() ===
                       (defect.contractor_name || "").trim()
                     }
-                    className="px-3 py-1.5 bg-white text-gray-900 border-2 border-gray-800 rounded-md hover:bg-gray-50 transition-colors text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="bg-sky-400 text-white border-2 border-sky-500 hover:bg-sky-500"
                   >
                     Save Contractor Name
-                  </button>
+                  </Button>
                 </div>
               </div>
             )}
@@ -728,17 +744,18 @@ export function DefectDetail({ currentUser }) {
                   </option>
                 ))}
               </select>
-              <button
+              <Button
+                size="md"
                 type="button"
                 onClick={handleAssignTechnician}
                 disabled={
                   !assignTechId ||
                   String(defect.assigned_technician_id || "") === assignTechId
                 }
-                className="px-3 py-2 bg-white text-gray-900 border-2 border-gray-800 rounded-md hover:bg-gray-50 transition-colors text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                className="bg-sky-400 text-white border-2 border-sky-500 hover:bg-sky-500"
               >
                 Assign Technician
-              </button>
+              </Button>
             </div>
             {technicians.length === 0 && (
               <div className="mt-2 text-xs text-gray-500">
@@ -814,19 +831,18 @@ export function DefectDetail({ currentUser }) {
                     rows={6}
                     className="w-full px-3 py-2 border-2 border-gray-300 rounded-md focus:ring-2 focus:ring-gray-400 focus:border-gray-600"
                   />
-                  <button
+                  <Button
+                    size="md"
                     type="button"
                     onClick={() => handleSaveComment(activeTabConfig.id)}
-                    disabled={
-                      !commentInput[activeTabConfig.id]?.trim() ||
-                      savingComment === activeTabConfig.id
-                    }
-                    className="mt-2 px-4 py-2 bg-white text-gray-900 border-2 border-gray-800 rounded-md hover:bg-gray-50 transition-colors text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                    loading={savingComment === activeTabConfig.id}
+                    disabled={!commentInput[activeTabConfig.id]?.trim()}
+                    className="mt-2 bg-sky-400 text-white border-2 border-sky-500 hover:bg-sky-500"
                   >
                     {savingComment === activeTabConfig.id
                       ? "Saving..."
                       : `Save ${activeTabConfig.label}`}
-                  </button>
+                  </Button>
                 </div>
               ) : (
                 <div className="p-4 bg-gray-50 rounded-lg border-2 border-gray-200 whitespace-pre-wrap text-gray-900">
@@ -842,12 +858,44 @@ export function DefectDetail({ currentUser }) {
         </div>
       </div>
 
+      {role === "admin" && (
+        <div className="wf-panel p-6 mb-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-sm font-semibold text-gray-900">
+                Delete Defect
+              </h3>
+              <p className="text-sm text-gray-600">
+                This action cannot be undone.
+              </p>
+            </div>
+            <Button
+              size="sm"
+              type="button"
+              onClick={() => setDeleteDefectDialogOpen(true)}
+              className="bg-sky-400 text-white border-2 border-sky-500 hover:bg-sky-500"
+            >
+              Delete Defect
+            </Button>
+          </div>
+        </div>
+      )}
+
       <ConfirmDialog
         isOpen={deletePhotoDialog.open}
         onClose={closeDeletePhotoDialog}
         onConfirm={confirmDeletePhoto}
         title="Delete Photo"
         message={`Are you sure you want to delete the ${deletePhotoDialog.label}? This action cannot be undone.`}
+        confirmText="Delete"
+        variant="danger"
+      />
+      <ConfirmDialog
+        isOpen={deleteDefectDialogOpen}
+        onClose={() => setDeleteDefectDialogOpen(false)}
+        onConfirm={() => handleStatusChange("delete")}
+        title="Delete Defect"
+        message="Are you sure you want to delete this defect? This action cannot be undone."
         confirmText="Delete"
         variant="danger"
       />

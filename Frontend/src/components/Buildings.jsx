@@ -155,7 +155,11 @@ export function Buildings({ currentUser }) {
       <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <h1 className="text-2xl font-semibold text-gray-900">Buildings</h1>
         {canManage && (
-          <Button onClick={() => handleOpenModal()}>
+          <Button
+            onClick={() => handleOpenModal()}
+            size="sm"
+            className="bg-sky-400 text-white border-2 border-sky-500 hover:bg-sky-500"
+          >
             <Plus className="w-5 h-5" aria-hidden="true" />
             Add Building
           </Button>
@@ -170,60 +174,98 @@ export function Buildings({ currentUser }) {
           />
           <p className="text-gray-600 mb-4">No buildings yet</p>
           {canManage && (
-            <Button onClick={() => handleOpenModal()}>
+            <Button
+              onClick={() => handleOpenModal()}
+              size="sm"
+              className="bg-sky-400 text-white border-2 border-sky-500 hover:bg-sky-500"
+            >
               Add Your First Building
             </Button>
           )}
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-          {buildings.map((building) => (
-            <article
-              key={building.id}
-              className="wf-panel-soft p-6"
-            >
-              <div className="flex items-start justify-between mb-4">
-                <div className="w-12 h-12 bg-gray-100 border border-gray-300 rounded-md flex items-center justify-center flex-shrink-0">
-                  <Building2
-                    className="w-6 h-6 text-gray-800"
-                    aria-hidden="true"
-                  />
-                </div>
-                {canManage && (
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => handleOpenModal(building)}
-                      className="w-11 h-11 flex items-center justify-center text-gray-700 border border-gray-300 hover:bg-gray-100 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-gray-400"
-                      aria-label={`Edit ${building.name}`}
+        <section className="wf-panel p-0 bg-white rounded-lg overflow-hidden mx-auto max-w-2xs-plus">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gray-100 border-b border-gray-200">
+                <tr>
+                  <th className="px-6 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    Building
+                  </th>
+                  <th
+                    className="px-6 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider"
+                    style={{ width: "75%" }}
+                  >
+                    Address
+                  </th>
+                  {canManage && (
+                    <th className="px-6 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                      Actions
+                    </th>
+                  )}
+                </tr>
+              </thead>
+              <tbody>
+                {buildings.map((building, index) => (
+                  <tr
+                    key={building.id}
+                    className={
+                      index === buildings.length - 1
+                        ? ""
+                        : "border-b border-gray-200"
+                    }
+                  >
+                    <td className="px-6 py-4 text-center">
+                      <div className="flex items-center justify-center gap-3">
+                        <div className="w-9 h-9 bg-gray-100 border border-gray-300 rounded-md flex items-center justify-center flex-shrink-0">
+                          <Building2
+                            className="w-5 h-5 text-gray-800"
+                            aria-hidden="true"
+                          />
+                        </div>
+                        <span className="text-sm font-semibold text-gray-900">
+                          {building.name}
+                        </span>
+                      </div>
+                    </td>
+                    <td
+                      className="px-6 py-4 text-center"
+                      style={{ width: "75%" }}
                     >
-                      <Edit2 className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() => handleDeleteClick(building)}
-                      className="w-11 h-11 flex items-center justify-center text-red-700 border border-gray-300 hover:bg-gray-100 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-gray-400"
-                      aria-label={`Delete ${building.name}`}
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                )}
-              </div>
-              <div>
-                <h2 className="text-lg font-semibold text-gray-900 mb-2">
-                  {building.name}
-                </h2>
-                <div className="flex items-start gap-1.5 text-sm text-gray-600 mb-3">
-                  <MapPin
-                    className="w-4 h-4 mt-0.5 flex-shrink-0"
-                    aria-hidden="true"
-                  />
-                  <span>{building.address}</span>
-                </div>
-                <div className="text-sm text-gray-500">ID: {building.id}</div>
-              </div>
-            </article>
-          ))}
-        </div>
+                      <div className="flex items-start justify-center gap-1.5 text-sm text-gray-600">
+                        <MapPin
+                          className="w-4 h-4 mt-0.5 flex-shrink-0"
+                          aria-hidden="true"
+                        />
+                        <span>{building.address}</span>
+                      </div>
+                    </td>
+                    {canManage && (
+                      <td className="px-6 py-4 text-center">
+                        <div className="inline-flex gap-1">
+                          <button
+                            onClick={() => handleOpenModal(building)}
+                            className="w-10 h-10 flex items-center justify-center text-gray-700 border border-gray-300 hover:bg-gray-100 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-gray-400"
+                            aria-label={`Edit ${building.name}`}
+                          >
+                            <Edit2 className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteClick(building)}
+                            className="w-10 h-10 flex items-center justify-center text-red-700 border border-gray-300 hover:bg-gray-100 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-gray-400"
+                            aria-label={`Delete ${building.name}`}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
+                    )}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
       )}
 
       {/* Add/Edit Building Modal */}
@@ -231,44 +273,82 @@ export function Buildings({ currentUser }) {
         isOpen={showModal}
         onClose={handleCloseModal}
         title={editingBuilding ? "Edit Building" : "Add New Building"}
+        showClose={false}
         footer={
-          <>
-            <Button variant="ghost" onClick={handleCloseModal} type="button">
-              Cancel
-            </Button>
-            <Button type="submit" loading={submitting} onClick={handleSubmit}>
+          <div className="w-full grid gap-3">
+            <Button
+              type="submit"
+              loading={submitting}
+              onClick={handleSubmit}
+              size="sm"
+              className="bg-sky-400 text-white border-2 border-sky-500 hover:bg-sky-500 mx-auto"
+            >
               {editingBuilding ? "Update Building" : "Add Building"}
             </Button>
-          </>
+            <Button
+              variant="ghost"
+              onClick={handleCloseModal}
+              type="button"
+              size="sm"
+              className="bg-red-100 text-gray-900 border-2 border-red-200 hover:bg-red-200 mx-auto"
+            >
+              Cancel
+            </Button>
+          </div>
         }
       >
         <form onSubmit={handleSubmit} id="building-form">
           <div className="space-y-4">
-            <Input
-              label="Building Name"
-              id="building-name"
-              type="text"
-              required
-              placeholder="e.g., Main Office Building"
-              value={formData.name}
-              onChange={(e) =>
-                setFormData({ ...formData, name: e.target.value })
-              }
-              error={formErrors.name}
-            />
+            <div className="flex items-center gap-4">
+              <label
+                htmlFor="building-name"
+                className="text-sm font-medium text-gray-700 text-center"
+              >
+                Building Name{" "}
+                <span className="text-red-600 ml-1" aria-label="required">
+                  :
+                </span>
+              </label>
+              <div className="flex-1">
+                <Input
+                  id="building-name"
+                  type="text"
+                  required
+                  placeholder="e.g., Main Office Building"
+                  value={formData.name}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
+                  error={formErrors.name}
+                />
+              </div>
+            </div>
 
-            <Textarea
-              label="Address"
-              id="building-address"
-              required
-              rows={3}
-              placeholder="e.g., 123 Main Street, City, State 12345"
-              value={formData.address}
-              onChange={(e) =>
-                setFormData({ ...formData, address: e.target.value })
-              }
-              error={formErrors.address}
-            />
+            <div className="flex items-center gap-4">
+              <label
+                htmlFor="building-address"
+                className="text-sm font-medium text-gray-700 text-center"
+              >
+                Address{" "}
+                <span className="text-red-600" aria-label="required">
+                  :
+                </span>
+              </label>
+              <div className="flex-1">
+                <Textarea
+                  id="building-address"
+                  required
+                  rows={3}
+                  placeholder="e.g., 123 Main Street, City, State 12345"
+                  className="text-center"
+                  value={formData.address}
+                  onChange={(e) =>
+                    setFormData({ ...formData, address: e.target.value })
+                  }
+                  error={formErrors.address}
+                />
+              </div>
+            </div>
 
             {formErrors.general && (
               <div

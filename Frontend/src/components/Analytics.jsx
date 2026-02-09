@@ -6,8 +6,11 @@ import {
   Clock,
   Download,
 } from "lucide-react";
+import ExcelJS from "exceljs";
 import { defectsAPI } from "../services/api";
 import { LoadingSkeleton } from "./ui/LoadingSkeleton";
+import { Alert } from "./ui/Alert";
+import { Button } from "./ui/Button";
 
 export function Analytics({ currentUser }) {
   const [defects, setDefects] = useState([]);
@@ -34,17 +37,19 @@ export function Analytics({ currentUser }) {
 
   if (currentUser.role !== "admin") {
     return (
-      <div className="max-w-7xl text-center py-12">
-        <p className="text-gray-600">
-          You don't have permission to access this page.
-        </p>
+      <div className="max-w-7xl mx-auto py-12">
+        <Alert
+          type="warning"
+          message="You don't have permission to access this page."
+          dismissible={false}
+        />
       </div>
     );
   }
 
   if (loading) {
     return (
-      <div className="max-w-7xl">
+      <div className="max-w-7xl mx-auto">
         <div className="space-y-4">
           <LoadingSkeleton variant="title" className="w-48" />
           <LoadingSkeleton variant="text" className="w-72" />
@@ -59,10 +64,8 @@ export function Analytics({ currentUser }) {
 
   if (error) {
     return (
-      <div className="max-w-7xl">
-        <div className="text-center py-12 text-red-600" role="alert">
-          {error}
-        </div>
+      <div className="max-w-7xl mx-auto py-12">
+        <Alert type="error" message={error} dismissible={false} />
       </div>
     );
   }
@@ -97,34 +100,47 @@ export function Analytics({ currentUser }) {
     );
   }).length;
 
-  const handleExport = () => {
-    const headers = ["ID", "Title", "Status", "Priority", "Created At"];
-    const rows = defects.map((d) => [
-      d.id,
-      d.title,
-      d.status,
-      d.priority,
-      d.created_at,
-    ]);
-    const csvContent = [headers, ...rows]
-      .map((row) =>
-        row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(","),
-      )
-      .join("\n");
+  const handleDownloadXlsx = async () => {
+    try {
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet("Defects");
+      worksheet.columns = [
+        { header: "ID", key: "id", width: 10 },
+        { header: "Title", key: "title", width: 40 },
+        { header: "Status", key: "status", width: 14 },
+        { header: "Priority", key: "priority", width: 12 },
+        { header: "Created At", key: "created_at", width: 24 },
+      ];
 
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.setAttribute("download", "defects-analytics.csv");
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+      defects.forEach((defect) => {
+        worksheet.addRow({
+          id: defect.id,
+          title: defect.title,
+          status: defect.status,
+          priority: defect.priority,
+          created_at: defect.created_at,
+        });
+      });
+
+      const buffer = await workbook.xlsx.writeBuffer();
+      const blob = new Blob([buffer], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "defects-analytics.xlsx");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      setError("Failed to download XLSX.");
+    }
   };
 
   return (
-    <div className="max-w-7xl">
+    <div className="max-w-7xl mx-auto">
       <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
           <h1 className="text-2xl font-semibold text-gray-900 mb-2">
@@ -134,20 +150,88 @@ export function Analytics({ currentUser }) {
             Overview of defect statistics and trends
           </p>
         </div>
-        <button
-          type="button"
-          onClick={handleExport}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-md border-2 border-gray-300 text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-400"
-        >
-          <Download className="w-4 h-4" aria-hidden="true" />
-          Export CSV
-        </button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+      {/* Key Metrics */}
+      <div
+        className="mb-6"
+        style={{
+          display: "flex",
+          gap: "1.5rem",
+          justifyContent: "space-between",
+        }}
+      >
+        <dl
+          className="wf-panel-soft p-6"
+          style={{ textAlign: "left", flex: "1 1 0" }}
+        >
+          <div
+            className="flex items-center gap-3 mb-2"
+            style={{ justifyContent: "flex-start" }}
+          >
+            <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+              <Clock className="w-5 h-5 text-green-700" aria-hidden="true" />
+            </div>
+            <div>
+              <dd className="text-2xl font-semibold text-gray-900">
+                {completionRate}%
+              </dd>
+              <dt className="text-sm text-gray-600">Completed</dt>
+            </div>
+          </div>
+        </dl>
+
+        <dl
+          className="wf-panel-soft p-6"
+          style={{ textAlign: "center", flex: "1 1 0" }}
+        >
+          <div
+            className="flex items-center gap-3 mb-2"
+            style={{ justifyContent: "center" }}
+          >
+            <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+              <AlertCircle
+                className="w-5 h-5 text-blue-700"
+                aria-hidden="true"
+              />
+            </div>
+            <div>
+              <dd className="text-2xl font-semibold text-gray-900">
+                {totalDefects}
+              </dd>
+              <dt className="text-sm text-gray-600">Total Defects</dt>
+            </div>
+          </div>
+        </dl>
+
+        <dl
+          className="wf-panel-soft p-6"
+          style={{ textAlign: "right", flex: "1 1 0" }}
+        >
+          <div
+            className="flex items-center gap-3 mb-2"
+            style={{ justifyContent: "flex-end" }}
+          >
+            <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+              <TrendingUp
+                className="w-5 h-5 text-purple-700"
+                aria-hidden="true"
+              />
+            </div>
+            <div>
+              <dd className="text-2xl font-semibold text-gray-900">
+                {defectsThisMonth}
+              </dd>
+              <dt className="text-sm text-gray-600">This Month</dt>
+            </div>
+          </div>
+        </dl>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4 mb-6">
         {/* Status Distribution */}
         <div
-          className="wf-panel p-6"
+          className="wf-panel p-6 bg-white"
           role="region"
           aria-labelledby="status-distribution-heading"
         >
@@ -202,7 +286,7 @@ export function Analytics({ currentUser }) {
 
         {/* Priority Distribution */}
         <div
-          className="wf-panel p-6"
+          className="wf-panel p-6 bg-white"
           role="region"
           aria-labelledby="priority-distribution-heading"
         >
@@ -264,55 +348,15 @@ export function Analytics({ currentUser }) {
         </div>
       </div>
 
-      {/* Key Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <dl className="wf-panel-soft p-6">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-              <Clock className="w-5 h-5 text-green-700" aria-hidden="true" />
-            </div>
-            <div>
-              <dd className="text-2xl font-semibold text-gray-900">
-                {completionRate}%
-              </dd>
-              <dt className="text-sm text-gray-600">Completed</dt>
-            </div>
-          </div>
-        </dl>
-
-        <dl className="wf-panel-soft p-6">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-              <AlertCircle
-                className="w-5 h-5 text-blue-700"
-                aria-hidden="true"
-              />
-            </div>
-            <div>
-              <dd className="text-2xl font-semibold text-gray-900">
-                {totalDefects}
-              </dd>
-              <dt className="text-sm text-gray-600">Total Defects</dt>
-            </div>
-          </div>
-        </dl>
-
-        <dl className="wf-panel-soft p-6">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-              <TrendingUp
-                className="w-5 h-5 text-purple-700"
-                aria-hidden="true"
-              />
-            </div>
-            <div>
-              <dd className="text-2xl font-semibold text-gray-900">
-                {defectsThisMonth}
-              </dd>
-              <dt className="text-sm text-gray-600">This Month</dt>
-            </div>
-          </div>
-        </dl>
+      <div className="mt-6 flex flex-col sm:flex-row sm:items-center sm:justify-end gap-3">
+        <Button
+          size="sm"
+          onClick={handleDownloadXlsx}
+          className="bg-sky-400 text-white border-2 border-sky-500 hover:bg-sky-500"
+        >
+          <Download className="w-4 h-4" aria-hidden="true" />
+          Download XLSX
+        </Button>
       </div>
     </div>
   );

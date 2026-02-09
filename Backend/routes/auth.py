@@ -29,7 +29,23 @@ def signup():
     db.session.add(new_user)
     db.session.commit()
 
-    return jsonify({'message': 'New user created!'}), 201
+    token = jwt.encode({
+        'user_id': new_user.id,
+        'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=24)
+    }, current_app.config['SECRET_KEY'], algorithm='HS256')
+
+    if isinstance(token, bytes):
+        token = token.decode('utf-8')
+
+    return jsonify({
+        'token': token,
+        'user': {
+            'id': new_user.id,
+            'name': new_user.name,
+            'email': new_user.email,
+            'role': new_user.role
+        }
+    }), 201
 
 @auth_bp.route('/login', methods=['POST'])
 def login():

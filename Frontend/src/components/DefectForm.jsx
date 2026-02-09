@@ -2,6 +2,12 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Upload } from "lucide-react";
 import { defectsAPI, buildingsAPI } from "../services/api";
+import { Button } from "./ui/Button";
+import { Input } from "./ui/Input";
+import { Textarea } from "./ui/Textarea";
+import { Select } from "./ui/Select";
+import { Alert } from "./ui/Alert";
+import { LoadingSpinner } from "./ui/LoadingSpinner";
 
 export function DefectForm({ currentUser }) {
   const navigate = useNavigate();
@@ -137,14 +143,15 @@ export function DefectForm({ currentUser }) {
   };
 
   return (
-    <div className="max-w-3xl">
-      <button
+    <div className="w-full mx-auto" style={{ maxWidth: "72rem" }}>
+      <Button
+        size="sm"
         onClick={() => navigate("/defects")}
-        className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6 transform transition-transform hover:scale-105 active:scale-95 active:text-gray-900"
+        className="mb-6 bg-sky-400 text-white border-2 border-sky-500 hover:bg-sky-500"
       >
         <ArrowLeft className="w-4 h-4" />
         Back to Defects
-      </button>
+      </Button>
 
       <div className="wf-panel p-6">
         <h1 className="text-2xl font-semibold text-gray-900 mb-6">
@@ -152,117 +159,110 @@ export function DefectForm({ currentUser }) {
         </h1>
 
         {error && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
-            {error}
-          </div>
+          <Alert
+            type="error"
+            message={error}
+            dismissible
+            onClose={() => setError(null)}
+            className="mb-4"
+          />
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-4">
           {/* Title */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Defect Title <span className="text-red-500">*</span>
+          <div className="flex items-center gap-4">
+            <label className="text-sm font-medium text-gray-700 text-center">
+              Defect Title{" "}
+              <span className="text-red-600" aria-label="required">
+                :
+              </span>
             </label>
-            <input
-              type="text"
-              required
-              value={formData.title}
-              onChange={(e) =>
-                setFormData({ ...formData, title: e.target.value })
-              }
-              aria-invalid={!!formErrors.title}
-              className={`w-full px-3 py-2 border-2 rounded-md focus:ring-2 focus:ring-gray-400 focus:border-gray-600 ${
-                formErrors.title ? "border-red-600" : "border-gray-300"
-              }`}
-              placeholder="Brief description of the defect"
-            />
-            {formErrors.title && (
-              <p className="text-sm text-red-600 mt-1" role="alert">
-                {formErrors.title}
-              </p>
-            )}
+            <div className="flex-1">
+              <Input
+                type="text"
+                required
+                value={formData.title}
+                onChange={(e) =>
+                  setFormData({ ...formData, title: e.target.value })
+                }
+                placeholder="Brief description of the defect"
+                error={formErrors.title}
+              />
+            </div>
           </div>
 
           {/* Description */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Detailed Description <span className="text-red-500">*</span>
+          <div className="flex items-center gap-4">
+            <label className="text-sm font-medium text-gray-700 text-center">
+              Detailed Description{" "}
+              <span className="text-red-600" aria-label="required">
+                :
+              </span>
             </label>
-            <textarea
-              required
-              value={formData.description}
-              onChange={(e) =>
-                setFormData({ ...formData, description: e.target.value })
-              }
-              rows={5}
-              aria-invalid={!!formErrors.description}
-              className={`w-full px-3 py-2 border-2 rounded-md focus:ring-2 focus:ring-gray-400 focus:border-gray-600 ${
-                formErrors.description ? "border-red-600" : "border-gray-300"
-              }`}
-              placeholder="Detailed description of the defect..."
-            />
-            {formErrors.description && (
-              <p className="text-sm text-red-600 mt-1" role="alert">
-                {formErrors.description}
-              </p>
-            )}
+            <div className="flex-1">
+              <Textarea
+                required
+                value={formData.description}
+                onChange={(e) =>
+                  setFormData({ ...formData, description: e.target.value })
+                }
+                rows={5}
+                placeholder="Detailed description of the defect..."
+                className="bg-white"
+                error={formErrors.description}
+              />
+            </div>
           </div>
 
           {/* Building */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Building <span className="text-red-500">*</span>
+          <div className="flex items-center gap-4">
+            <label className="text-sm font-medium text-gray-700 text-center">
+              Building{" "}
+              <span className="text-red-600" aria-label="required">
+                :
+              </span>
             </label>
-            <select
-              required
-              value={formData.building_id}
-              onChange={(e) =>
-                setFormData({ ...formData, building_id: e.target.value })
-              }
-              aria-invalid={!!formErrors.building_id}
-              className={`w-full px-3 py-2 border-2 rounded-md focus:ring-2 focus:ring-gray-400 focus:border-gray-600 ${
-                formErrors.building_id ? "border-red-600" : "border-gray-300"
-              }`}
-            >
-              <option value="">Select a building</option>
-              {buildings.map((building) => (
-                <option key={building.id} value={building.id}>
-                  {building.name}
-                </option>
-              ))}
-            </select>
-            {formErrors.building_id && (
-              <p className="text-sm text-red-600 mt-1" role="alert">
-                {formErrors.building_id}
-              </p>
-            )}
+            <div className="flex-1">
+              <Select
+                required
+                value={formData.building_id}
+                onChange={(e) =>
+                  setFormData({ ...formData, building_id: e.target.value })
+                }
+                error={formErrors.building_id}
+              >
+                <option value="">Select a building</option>
+                {buildings.map((building) => (
+                  <option key={building.id} value={building.id}>
+                    {building.name}
+                  </option>
+                ))}
+              </Select>
+            </div>
           </div>
 
           {/* Priority */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Priority <span className="text-red-500">*</span>
+          <div className="flex items-center gap-4">
+            <label className="text-sm font-medium text-gray-700 text-center">
+              Priority{" "}
+              <span className="text-red-600" aria-label="required">
+                :
+              </span>
             </label>
-            <select
-              required
-              value={formData.priority}
-              onChange={(e) =>
-                setFormData({ ...formData, priority: e.target.value })
-              }
-              aria-invalid={!!formErrors.priority}
-              className={`w-full px-3 py-2 border-2 rounded-md focus:ring-2 focus:ring-gray-400 focus:border-gray-600 ${
-                formErrors.priority ? "border-red-600" : "border-gray-300"
-              }`}
-            >
-              <option value="low">Low</option>
-              <option value="medium">Medium</option>
-              <option value="high">High</option>
-            </select>
-            {formErrors.priority && (
-              <p className="text-sm text-red-600 mt-1" role="alert">
-                {formErrors.priority}
-              </p>
-            )}
+            <div className="flex-1">
+              <Select
+                required
+                value={formData.priority}
+                onChange={(e) =>
+                  setFormData({ ...formData, priority: e.target.value })
+                }
+                error={formErrors.priority}
+              >
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+              </Select>
+            </div>
           </div>
 
           {/* Initial Report */}
@@ -323,7 +323,7 @@ export function DefectForm({ currentUser }) {
                 onChange={(e) =>
                   setFormData({ ...formData, contractor_name: e.target.value })
                 }
-                className="w-full px-3 py-2 border-2 border-gray-300 rounded-md focus:ring-2 focus:ring-gray-400 focus:border-gray-600"
+                className="w-full px-3 py-2 border-2 border-gray-300 rounded-md bg-white focus:ring-2 focus:ring-gray-400 focus:border-gray-600"
                 placeholder="Enter contractor name"
               />
             </div>
@@ -370,20 +370,23 @@ export function DefectForm({ currentUser }) {
 
           {/* Submit Button */}
           <div className="flex gap-3 pt-4">
-            <button
+            <Button
+              size="md"
               type="submit"
+              loading={loading}
               disabled={loading}
-              className="px-6 py-2.5 bg-white text-gray-900 border-2 border-gray-800 rounded-md hover:bg-gray-50 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+              className="bg-sky-400 text-white border-2 border-sky-500 hover:bg-sky-500"
             >
               {loading ? "Submitting..." : "Submit Defect"}
-            </button>
-            <button
+            </Button>
+            <Button
+              size="md"
               type="button"
               onClick={() => navigate("/defects")}
-              className="px-6 py-2.5 border-2 border-gray-400 text-gray-700 rounded-md hover:bg-gray-50 transition-colors font-medium"
+              className="bg-sky-400 text-white border-2 border-sky-500 hover:bg-sky-500"
             >
               Cancel
-            </button>
+            </Button>
           </div>
         </form>
       </div>

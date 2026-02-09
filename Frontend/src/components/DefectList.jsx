@@ -8,6 +8,7 @@ import { SearchInput } from "./ui/SearchInput";
 import { StatusBadge } from "./ui/Badge";
 import { Pagination } from "./ui/Pagination";
 import { TableSkeleton } from "./ui/LoadingSkeleton";
+import { Alert } from "./ui/Alert";
 import { usePagination } from "../hooks/usePagination";
 import { formatDate } from "../utils/dateFormatter";
 
@@ -147,10 +148,13 @@ export function DefectList({ currentUser }) {
 
   if (error) {
     return (
-      <div className="max-w-7xl">
-        <div className="text-center py-12 text-red-600" role="alert">
-          {error}
-        </div>
+      <div className="max-w-7xl py-12">
+        <Alert
+          type="error"
+          message={error}
+          className="mb-4"
+          dismissible={false}
+        />
       </div>
     );
   }
@@ -160,7 +164,10 @@ export function DefectList({ currentUser }) {
       <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <h1 className="text-2xl font-semibold text-gray-900">Defect List</h1>
         <Link to="/defects/new">
-          <Button>
+          <Button
+            size="sm"
+            className="bg-sky-400 text-white border-2 border-sky-500 hover:bg-sky-500"
+          >
             <Plus className="w-4 h-4" aria-hidden="true" />
             Log Defect
           </Button>
@@ -174,6 +181,7 @@ export function DefectList({ currentUser }) {
           onChange={setSearchQuery}
           onClear={() => setSearchQuery("")}
           placeholder="Search by ID, title, or building..."
+          iconPlacement="outside"
           className="w-full"
         />
 
@@ -230,39 +238,23 @@ export function DefectList({ currentUser }) {
       </div>
 
       {/* Responsive Table/Cards */}
-      <div className="wf-panel overflow-hidden">
+      <div className="wf-panel p-0 bg-white rounded-lg overflow-hidden w-full">
         {/* Desktop Table */}
-        <div className="hidden md:block overflow-x-auto">
-          <table className="w-full table-fixed">
+        <div className="overflow-x-auto">
+          <table
+            className="w-full"
+            style={{ width: "100%", tableLayout: "fixed" }}
+          >
             <colgroup>
-              <col style={{ width: "8%" }} />
-              <col style={{ width: "32%" }} />
-              <col style={{ width: "22%" }} />
-              <col style={{ width: "12%" }} />
-              <col style={{ width: "16%" }} />
+              <col style={{ width: "28%" }} />
+              <col style={{ width: "24%" }} />
+              <col style={{ width: "14%" }} />
+              <col style={{ width: "18%" }} />
               <col style={{ width: "10%" }} />
+              <col style={{ width: "6%" }} />
             </colgroup>
-            <thead className="wf-table-head">
+            <thead className="bg-gray-100 border-b border-gray-200">
               <tr>
-                <th
-                  scope="col"
-                  aria-sort={
-                    sortConfig.key === "id"
-                      ? sortConfig.direction === "asc"
-                        ? "ascending"
-                        : "descending"
-                      : "none"
-                  }
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  <button
-                    type="button"
-                    onClick={() => handleSort("id")}
-                    className="flex items-center gap-1 focus:outline-none focus:underline"
-                  >
-                    ID
-                  </button>
-                </th>
                 <th
                   scope="col"
                   aria-sort={
@@ -272,12 +264,12 @@ export function DefectList({ currentUser }) {
                         : "descending"
                       : "none"
                   }
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  className="px-6 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider"
                 >
                   <button
                     type="button"
                     onClick={() => handleSort("title")}
-                    className="flex items-center gap-1 focus:outline-none focus:underline"
+                    className="inline-flex items-center gap-1 focus:outline-none focus:underline"
                   >
                     Title
                   </button>
@@ -291,12 +283,12 @@ export function DefectList({ currentUser }) {
                         : "descending"
                       : "none"
                   }
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  className="px-6 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider"
                 >
                   <button
                     type="button"
                     onClick={() => handleSort("building_id")}
-                    className="flex items-center gap-1 focus:outline-none focus:underline"
+                    className="inline-flex items-center gap-1 focus:outline-none focus:underline"
                   >
                     Building
                   </button>
@@ -310,12 +302,12 @@ export function DefectList({ currentUser }) {
                         : "descending"
                       : "none"
                   }
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  className="px-6 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider"
                 >
                   <button
                     type="button"
                     onClick={() => handleSort("status")}
-                    className="flex items-center gap-1 focus:outline-none focus:underline"
+                    className="inline-flex items-center gap-1 focus:outline-none focus:underline"
                   >
                     Status
                   </button>
@@ -329,12 +321,12 @@ export function DefectList({ currentUser }) {
                         : "descending"
                       : "none"
                   }
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  className="px-6 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider"
                 >
                   <button
                     type="button"
                     onClick={() => handleSort("assigned_technician_id")}
-                    className="flex items-center gap-1 focus:outline-none focus:underline"
+                    className="inline-flex items-center gap-1 focus:outline-none focus:underline"
                   >
                     Assigned
                   </button>
@@ -348,21 +340,24 @@ export function DefectList({ currentUser }) {
                         : "descending"
                       : "none"
                   }
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  className="px-6 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider"
                 >
                   <button
                     type="button"
                     onClick={() => handleSort("updated_at")}
-                    className="flex items-center gap-1 focus:outline-none focus:underline"
+                    className="inline-flex items-center gap-1 focus:outline-none focus:underline"
                   >
                     Updated
                   </button>
                 </th>
+                <th className="px-6 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                  Details
+                </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200">
+            <tbody>
               {pagination.paginatedItems.length > 0 ? (
-                pagination.paginatedItems.map((defect) => {
+                pagination.paginatedItems.map((defect, index) => {
                   const building = buildings.find(
                     (b) => b.id === defect.building_id,
                   );
@@ -375,35 +370,36 @@ export function DefectList({ currentUser }) {
                   return (
                     <tr
                       key={defect.id}
-                      className="wf-table-row focus-within:bg-gray-50"
+                      className={
+                        index === pagination.paginatedItems.length - 1
+                          ? ""
+                          : "border-b border-gray-200"
+                      }
                     >
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        <Link
-                          to={`/defects/${defect.id}`}
-                          className="text-blue-600 hover:text-blue-800 focus:outline-none focus:underline"
-                        >
-                          #{defect.id}
-                        </Link>
+                      <td className="px-6 py-4 text-center text-sm text-gray-900 line-clamp-2">
+                        {defect.title}
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-900">
-                        <Link
-                          to={`/defects/${defect.id}`}
-                          className="hover:text-blue-600 focus:outline-none focus:underline line-clamp-2"
-                        >
-                          {defect.title}
-                        </Link>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                      <td className="px-6 py-4 text-center text-sm text-gray-600">
                         {building?.name || "—"}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="px-6 py-4 text-center">
                         <StatusBadge status={defect.status} />
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                      <td className="px-6 py-4 text-center text-sm text-gray-600">
                         {assignee?.name || "—"}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className="px-6 py-4 text-center text-sm text-gray-500">
                         {formatDate(defect.updated_at)}
+                      </td>
+                      <td className="px-6 py-4 text-center">
+                        <Link to={`/defects/${defect.id}`}>
+                          <Button
+                            size="xs"
+                            className="bg-sky-400 text-white border-2 border-sky-500 hover:bg-sky-500"
+                          >
+                            View
+                          </Button>
+                        </Link>
                       </td>
                     </tr>
                   );

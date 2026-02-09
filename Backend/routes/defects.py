@@ -161,10 +161,13 @@ def update_defect(user, defect_id):
     if role == 'csr':
         if 'priority' in data:
             defect.priority = data['priority']
+        for field in ['initial_report_image', 'image_url']:
+            if field in data:
+                setattr(defect, field, data[field])
     elif role == 'building_executive':
         if 'status' in data and data['status'] in ['Open', 'Reviewed', 'Ongoing', 'Done', 'Completed']:
             defect.status = data['status']
-        for field in ['external_contractor', 'contractor_name', 'technician_report_image']:
+        for field in ['external_contractor', 'contractor_name', 'initial_report_image', 'image_url', 'technician_report_image']:
             if field in data:
                 setattr(defect, field, data[field])
     elif role == 'technician':
@@ -343,12 +346,23 @@ def reopen_defect(user, defect_id):
 @require_auth
 @require_roles('admin')
 def delete_defect(user, defect_id):
-    defect = Defect.query.get(defect_id)
-    if not defect:
-        return jsonify({'message': 'Defect not found'}), 404
-    db.session.delete(defect)
-    db.session.commit()
-    return jsonify({'message': 'Defect deleted'})
+    try:
+        db.session.execute(
+            DefectComment.__table__.delete().where(
+                DefectComment.defect_id == defect_id
+            )
+        )
+        result = db.session.execute(
+            Defect.__table__.delete().where(Defect.id == defect_id)
+        )
+        if result.rowcount == 0:
+            db.session.rollback()
+            return jsonify({'message': 'Defect not found'}), 404
+        db.session.commit()
+        return jsonify({'message': 'Defect deleted'})
+    except Exception:
+        db.session.rollback()
+        return jsonify({'message': 'Failed to delete defect'}), 500
 
 
 @defects_bp.route('/<int:defect_id>/comments', methods=['POST'])

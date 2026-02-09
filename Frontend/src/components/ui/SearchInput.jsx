@@ -7,6 +7,7 @@ export function SearchInput({
   onClear,
   placeholder = "Search...",
   debounceMs = 300,
+  iconPlacement = "inside",
   className = "",
 }) {
   const [localValue, setLocalValue] = useState(value);
@@ -31,6 +32,34 @@ export function SearchInput({
       onClear();
     }
   };
+
+  if (iconPlacement === "outside") {
+    return (
+      <div className={`flex items-center gap-2 ${className}`}>
+        <Search className="w-4 h-4 text-gray-400" aria-hidden="true" />
+        <div className="relative flex-1">
+          <input
+            type="search"
+            value={localValue}
+            onChange={(e) => setLocalValue(e.target.value)}
+            placeholder={placeholder}
+            className="w-full pl-3 pr-10 py-2 border-2 border-gray-300 rounded-md bg-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-gray-600"
+            aria-label="Search"
+          />
+          {localValue && (
+            <button
+              type="button"
+              onClick={handleClear}
+              className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400"
+              aria-label="Clear search"
+            >
+              <X className="w-4 h-4 text-gray-500" />
+            </button>
+          )}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={`relative ${className}`}>

@@ -2,13 +2,15 @@ import {
   Building2,
   ChevronDown,
   BarChart3,
+  Users,
+  LayoutDashboard,
+  AlertTriangle,
   UserCircle,
   LogOut,
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { authAPI } from "../services/api";
 import { useState, useRef, useEffect } from "react";
-import { MobileNav } from "./MobileNav";
 
 export function TopNav({ currentUser, onLogout }) {
   const isAdmin = currentUser.role === "admin";
@@ -37,37 +39,45 @@ export function TopNav({ currentUser, onLogout }) {
     <nav className="fixed top-0 left-0 right-0 h-16 bg-white border-b-2 border-gray-300 z-50">
       <div className="h-full px-4 sm:px-8 flex items-center justify-between">
         <div className="flex items-center gap-4 sm:gap-12">
-          {/* Mobile Menu Toggle */}
-          <MobileNav currentUser={currentUser} />
+          <span className="font-semibold tracking-tight text-gray-900">
+            BDMS
+          </span>
 
-          {/* Logo */}
-          <Link
-            to="/"
-            className="flex items-center gap-2 transition-colors hover:opacity-80"
-          >
-            <div className="w-8 h-8 bg-white border-2 border-gray-800 rounded flex items-center justify-center">
-              <Building2 className="w-5 h-5 text-gray-900" />
-            </div>
-            <span className="hidden sm:inline font-semibold tracking-tight text-gray-900">
-              DefectTrack
-            </span>
-          </Link>
+          {/* Primary Nav Items */}
+          <div className="flex flex-wrap items-center gap-4">
+            <Link
+              to="/dashboard"
+              className="flex items-center gap-2 px-3 py-2 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors"
+            >
+              <LayoutDashboard className="w-4 h-4" aria-hidden="true" />
+              Dashboard
+            </Link>
 
-          {/* Desktop Nav Items - Hidden on mobile */}
-          <div className="hidden md:flex items-center gap-4">
             <Link
               to="/buildings"
-              className="px-3 py-2 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors"
+              className="flex items-center gap-2 px-3 py-2 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors"
             >
+              <Building2 className="w-4 h-4" aria-hidden="true" />
               Buildings
             </Link>
 
             <Link
               to="/defects"
-              className="px-3 py-2 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors"
+              className="flex items-center gap-2 px-3 py-2 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors"
             >
+              <AlertTriangle className="w-4 h-4" aria-hidden="true" />
               Defects
             </Link>
+
+            {isAdmin && (
+              <Link
+                to="/users"
+                className="flex items-center gap-2 px-3 py-2 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors"
+              >
+                <Users className="w-4 h-4" aria-hidden="true" />
+                Users
+              </Link>
+            )}
 
             {isAdmin && (
               <Link
@@ -110,7 +120,6 @@ export function TopNav({ currentUser, onLogout }) {
                   try {
                     await authAPI.logout();
                   } catch (error) {
-                    console.error("Logout error:", error);
                   } finally {
                     localStorage.removeItem("token");
                     localStorage.removeItem("user");

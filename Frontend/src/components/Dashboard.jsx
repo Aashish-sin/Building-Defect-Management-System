@@ -4,6 +4,7 @@ import { AlertTriangle, CheckCircle2, Clock, TrendingUp } from "lucide-react";
 import { defectsAPI } from "../services/api";
 import { StatusBadge } from "./ui/Badge";
 import { CardSkeleton } from "./ui/LoadingSkeleton";
+import { Alert } from "./ui/Alert";
 import { formatRelativeTime } from "../utils/dateFormatter";
 
 export function Dashboard({ currentUser }) {
@@ -47,35 +48,11 @@ export function Dashboard({ currentUser }) {
     loadDashboardData();
   }, []);
 
-  const statCards = [
-    {
-      label: "Total Defects",
-      value: stats.total,
-      icon: AlertTriangle,
-      color: "bg-blue-500",
-      ariaLabel: `${stats.total} total defects`,
-    },
-    {
-      label: "Ongoing",
-      value: stats.ongoing,
-      icon: Clock,
-      color: "bg-yellow-500",
-      ariaLabel: `${stats.ongoing} ongoing defects`,
-    },
-    {
-      label: "Completed",
-      value: stats.completed,
-      icon: CheckCircle2,
-      color: "bg-green-500",
-      ariaLabel: `${stats.completed} completed defects`,
-    },
-    {
-      label: "Open",
-      value: stats.open,
-      icon: TrendingUp,
-      color: "bg-purple-500",
-      ariaLabel: `${stats.open} open defects`,
-    },
+  const statRows = [
+    { label: "Total Defects", value: stats.total },
+    { label: "Ongoing", value: stats.ongoing },
+    { label: "Completed", value: stats.completed },
+    { label: "Open", value: stats.open },
   ];
 
   if (loading) {
@@ -98,10 +75,8 @@ export function Dashboard({ currentUser }) {
 
   if (error) {
     return (
-      <div className="max-w-7xl">
-        <div className="text-center py-12 text-red-600" role="alert">
-          {error}
-        </div>
+      <div className="max-w-7xl py-12">
+        <Alert type="error" message={error} dismissible={false} />
       </div>
     );
   }
@@ -113,49 +88,48 @@ export function Dashboard({ currentUser }) {
         <p className="text-gray-600">Welcome back, {currentUser.name}</p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
-        {statCards.map((stat) => {
-          const Icon = stat.icon;
-          return (
-            <article
-              key={stat.label}
-              className="wf-panel-soft p-6"
-              aria-label={stat.ariaLabel}
-            >
-              <div
-                className={`w-12 h-12 ${stat.color} rounded-lg flex items-center justify-center mb-4`}
-                aria-hidden="true"
-              >
-                <Icon className="w-6 h-6 text-white" />
-              </div>
-              <div className="text-3xl font-semibold text-gray-900 mb-1">
-                {stat.value}
-              </div>
-              <div className="text-sm text-gray-600">{stat.label}</div>
-            </article>
-          );
-        })}
-      </div>
+      <section
+        className="wf-panel p-0 bg-white mb-8 mx-auto max-w-2xs-plus rounded-lg overflow-hidden"
+        aria-label="Defect stats"
+      >
+        {statRows.map((stat, index) => (
+          <div
+            key={stat.label}
+            className={`flex items-center justify-center gap-4 px-6 py-4 ${index === statRows.length - 1 ? "" : "border-b border-gray-200"}`}
+          >
+            <span className="text-sm text-gray-600">{stat.label} :</span>
+            <span className="text-3xl font-semibold text-gray-900">
+              {stat.value}
+            </span>
+          </div>
+        ))}
+      </section>
 
       <section
-        className="wf-panel p-6"
+        className="wf-panel p-0 bg-white rounded-lg overflow-hidden mx-auto max-w-2xs-plus"
         aria-labelledby="recent-activity-heading"
       >
-        <h2
-          id="recent-activity-heading"
-          className="text-lg font-semibold text-gray-900 mb-4"
-        >
-          Recent Activity
-        </h2>
+        <div className="px-6 py-4 border-b border-gray-200">
+          <h2
+            id="recent-activity-heading"
+            className="text-lg font-semibold text-gray-900"
+          >
+            Recent Activity
+          </h2>
+        </div>
         {recentDefects.length > 0 ? (
-          <ul className="space-y-4">
-            {recentDefects.map((defect) => (
+          <ul>
+            {recentDefects.map((defect, index) => (
               <li
                 key={defect.id}
-                className="flex items-start gap-3 pb-4 border-b border-gray-100 last:border-0 last:pb-0"
+                className={`flex items-center gap-4 px-6 py-4 ${
+                  index === recentDefects.length - 1
+                    ? ""
+                    : "border-b border-gray-200"
+                }`}
               >
                 <div
-                  className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"
+                  className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0"
                   aria-hidden="true"
                 ></div>
                 <div className="flex-1 min-w-0">
@@ -174,7 +148,9 @@ export function Dashboard({ currentUser }) {
             ))}
           </ul>
         ) : (
-          <p className="text-sm text-gray-500">No recent activity.</p>
+          <div className="px-6 py-4 text-sm text-gray-500">
+            No recent activity.
+          </div>
         )}
       </section>
     </div>

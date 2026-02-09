@@ -77,4 +77,7 @@ class DefectComment(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
 
-    defect = db.relationship('Defect', backref=db.backref('comments', lazy=True))
+    defect = db.relationship(
+        'Defect',
+        backref=db.backref('comments', lazy=True, cascade='all, delete-orphan')
+    )

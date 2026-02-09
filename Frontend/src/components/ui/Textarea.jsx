@@ -8,6 +8,7 @@ export const Textarea = forwardRef(
       error,
       helperText,
       required = false,
+      labelClassName = "",
       className = "",
       ...props
     },
@@ -22,12 +23,12 @@ export const Textarea = forwardRef(
         {label && (
           <label
             htmlFor={inputId}
-            className="block text-sm font-medium text-gray-700 mb-2"
+            className={`block text-sm font-medium text-gray-700 mb-2 ${labelClassName}`}
           >
             {label}
             {required && (
               <span className="text-red-600 ml-1" aria-label="required">
-                *
+                :
               </span>
             )}
           </label>
