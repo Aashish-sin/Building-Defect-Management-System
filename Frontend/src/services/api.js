@@ -130,10 +130,6 @@ export const buildingsAPI = {
   create: (data) => api.post("/buildings", data),
   update: (id, data) => api.put(`/buildings/${id}`, data),
   delete: (id) => api.delete(`/buildings/${id}`),
-  getUsers: (id) => api.get(`/buildings/${id}/users`),
-  assignUser: (id, data) => api.post(`/buildings/${id}/users`, data),
-  removeUser: (buildingId, userId) =>
-    api.delete(`/buildings/${buildingId}/users/${userId}`),
 };
 
 export const usersAPI = {

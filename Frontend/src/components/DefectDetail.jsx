@@ -816,7 +816,7 @@ export function DefectDetail({ currentUser }) {
                     }
                     placeholder={`Enter ${activeTabConfig.label.toLowerCase()}...`}
                     rows={6}
-                    className="w-full px-3 py-2 border-2 border-gray-300 rounded-md focus:ring-2 focus:ring-gray-400 focus:border-gray-600"
+                    className="w-full px-3 py-2 border-2 border-gray-300 rounded-md bg-white focus:ring-2 focus:ring-gray-400 focus:border-gray-600"
                   />
                   <Button
                     size="md"

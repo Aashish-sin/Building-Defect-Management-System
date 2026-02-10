@@ -105,9 +105,6 @@ The API will be available at `http://localhost:5000`
 - `GET /api/buildings/:id` - Get building details
 - `PUT /api/buildings/:id` - Update building (admin only)
 - `DELETE /api/buildings/:id` - Delete building (admin only)
-- `GET /api/buildings/:id/users` - List building users
-- `POST /api/buildings/:id/users` - Assign user to building
-- `DELETE /api/buildings/:id/users/:userId` - Remove user from building
 
 ### Users
 
@@ -150,7 +147,7 @@ The API will be available at `http://localhost:5000`
 - Read and update assigned defects only
 - Mark defects as ongoing/done
 - Add technical reports
-- Limited to assigned buildings
+- Can view all buildings
 
 ## Database Schema
 
@@ -161,10 +158,6 @@ The API will be available at `http://localhost:5000`
 ### Buildings
 
 - id, name, address, created_at, updated_at
-
-### Building Users
-
-- id, building_id, user_id, role (manager/engineer), created_at
 
 ### Defects
 
@@ -181,7 +174,7 @@ https://github.com/Aashish-sin/Building-Defect-Management-System/tree/main/Front
 ## Future Updates
 
 - Work to resolve more edge cases
-- Allow techs to be assigned to a building instead of having all techs be available for all buildings under building_users table
+- Work on a mobile Nav
 
 ## License
 

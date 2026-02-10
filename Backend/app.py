@@ -28,7 +28,7 @@ def create_app():
     db.init_app(app)
     migrate.init_app(app, db)
 
-    from models import User, RefreshToken, Building, BuildingUser, Defect, DefectComment
+    from models import User, RefreshToken, Building, Defect, DefectComment
     from routes.auth import auth_bp
     from routes.defects import defects_bp
     from routes.buildings import buildings_bp

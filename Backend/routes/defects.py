@@ -2,7 +2,7 @@ import datetime
 from flask import Blueprint, request, jsonify
 from extensions import db
 from models import Defect, DefectComment, Building, User
-from routes.utils import require_auth, require_roles, user_has_building_access
+from routes.utils import require_auth, require_roles
 
 
 defects_bp = Blueprint('defects_bp', __name__)
@@ -391,9 +391,14 @@ def upsert_comments(user, defect_id):
     elif role == 'admin':
         allowed_fields = ['initial_report', 'executive_decision', 'technician_report', 'verification_report', 'final_completion']
 
+    updated = False
     for field in allowed_fields:
         if field in data:
             setattr(comments, field, data[field])
+            updated = True
+
+    if updated:
+        defect.updated_at = datetime.datetime.utcnow()
 
     db.session.commit()
     return jsonify(_serialize_comment(comments))

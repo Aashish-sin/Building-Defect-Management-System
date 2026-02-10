@@ -39,15 +39,6 @@ class Building(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
 
-class BuildingUser(db.Model):
-    __tablename__ = 'building_users'
-    id = db.Column(db.Integer, primary_key=True)
-    building_id = db.Column(db.Integer, db.ForeignKey('buildings.id'), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    role = db.Column(db.Enum('manager', 'engineer', name='building_user_roles'), nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
-    __table_args__ = (db.UniqueConstraint('building_id', 'user_id'),)
-
 class Defect(db.Model):
     __tablename__ = 'defects'
     id = db.Column(db.Integer, primary_key=True)

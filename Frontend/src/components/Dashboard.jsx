@@ -4,7 +4,7 @@ import { defectsAPI } from "../services/api";
 import { StatusBadge } from "./ui/Badge";
 import { CardSkeleton } from "./ui/LoadingSkeleton";
 import { Alert } from "./ui/Alert";
-import { formatRelativeTime } from "../utils/dateFormatter";
+import { formatDateTime } from "../utils/dateFormatter";
 
 export function Dashboard({ currentUser }) {
   const [stats, setStats] = useState({
@@ -139,7 +139,8 @@ export function Dashboard({ currentUser }) {
                     {defect.title}
                   </Link>
                   <p className="text-xs text-gray-500 mt-1">
-                    Updated {formatRelativeTime(defect.updated_at)}
+                    Last updated{" "}
+                    {formatDateTime(defect.updated_at || defect.created_at)}
                   </p>
                 </div>
                 <StatusBadge status={defect.status} />

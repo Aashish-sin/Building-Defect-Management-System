@@ -1,7 +1,7 @@
 import functools
 from flask import request, jsonify, current_app
 import jwt
-from models import User, BuildingUser
+from models import User
 
 
 def _get_token():
@@ -47,6 +47,6 @@ def require_roles(*roles):
 def user_has_building_access(user, building_id):
     if user.role == 'admin':
         return True
-    if user.role in ['building_executive', 'technician', 'csr']:
-        return BuildingUser.query.filter_by(user_id=user.id, building_id=building_id).first() is not None
+    if user.role == 'technician':
+        return True
     return False
