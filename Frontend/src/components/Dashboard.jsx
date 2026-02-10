@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { AlertTriangle, CheckCircle2, Clock, TrendingUp } from "lucide-react";
 import { defectsAPI } from "../services/api";
 import { StatusBadge } from "./ui/Badge";
 import { CardSkeleton } from "./ui/LoadingSkeleton";

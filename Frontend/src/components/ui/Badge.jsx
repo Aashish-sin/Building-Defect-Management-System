@@ -5,14 +5,14 @@ export function Badge({ children, variant = "default", className = "" }) {
     csr: "bg-gray-50 text-gray-700 border border-gray-400",
     building_executive: "bg-gray-50 text-gray-700 border border-gray-400",
     technician: "bg-gray-50 text-gray-700 border border-gray-400",
-    open: "bg-blue-50 text-blue-800 border border-blue-200",
+    open: "bg-red-50 text-red-800 border border-red-200",
     reviewed: "bg-purple-50 text-purple-800 border border-purple-200",
     ongoing: "bg-yellow-50 text-yellow-800 border border-yellow-200",
     done: "bg-green-50 text-green-800 border border-green-200",
-    completed: "bg-gray-100 text-gray-700 border border-gray-300",
+    completed: "bg-white text-gray-700 border border-gray-300",
     high: "bg-red-50 text-red-800 border border-red-200",
     medium: "bg-yellow-50 text-yellow-800 border border-yellow-200",
-    low: "bg-green-50 text-green-800 border border-green-200",
+    low: "bg-blue-50 text-blue-800 border border-blue-200",
   };
 
   const variantClass = variants[variant.toLowerCase()] || variants.default;

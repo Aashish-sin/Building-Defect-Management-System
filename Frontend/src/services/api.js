@@ -7,7 +7,16 @@ const api = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
+  withCredentials: true,
 });
+
+let isRefreshing = false;
+let refreshQueue = [];
+
+const processRefreshQueue = (newToken) => {
+  refreshQueue.forEach((callback) => callback(newToken));
+  refreshQueue = [];
+};
 
 api.interceptors.request.use(
   (config) => {
@@ -25,11 +34,58 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
+    const originalRequest = error.config || {};
+    const isAuthRoute = originalRequest.url?.includes("/auth/");
+
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry &&
+      !isAuthRoute
+    ) {
+      originalRequest._retry = true;
+
+      if (isRefreshing) {
+        return new Promise((resolve, reject) => {
+          refreshQueue.push((newToken) => {
+            if (!newToken) {
+              reject(error);
+              return;
+            }
+            originalRequest.headers.Authorization = `Bearer ${newToken}`;
+            resolve(api(originalRequest));
+          });
+        });
+      }
+
+      isRefreshing = true;
+
+      return authAPI
+        .refresh()
+        .then((response) => {
+          const { token } = response.data;
+          localStorage.setItem("token", token);
+          processRefreshQueue(token);
+          originalRequest.headers.Authorization = `Bearer ${token}`;
+          return api(originalRequest);
+        })
+        .catch((refreshError) => {
+          processRefreshQueue(null);
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
+          window.location.href = "/login";
+          return Promise.reject(refreshError);
+        })
+        .finally(() => {
+          isRefreshing = false;
+        });
+    }
+
+    if (error.response?.status === 401 && isAuthRoute) {
       localStorage.removeItem("token");
       localStorage.removeItem("user");
       window.location.href = "/login";
     }
+
     return Promise.reject(error);
   },
 );
@@ -49,6 +105,7 @@ export const authAPI = {
   },
   signup: (data) => api.post("/auth/signup", data),
   logout: () => api.post("/auth/logout"),
+  refresh: () => api.post("/auth/refresh"),
 };
 
 export const defectsAPI = {
@@ -64,7 +121,7 @@ export const defectsAPI = {
   markComplete: (id, data) => api.patch(`/defects/${id}/complete`, data),
   reopen: (id) => api.patch(`/defects/${id}/reopen`),
   getComments: (id) => api.get(`/defects/${id}/comments`),
-  updateComments: (id, data) => api.post(`/defects/${id}/comments`, data),
+  updateComments: (id, data) => api.patch(`/defects/${id}/comments`, data),
 };
 
 export const buildingsAPI = {

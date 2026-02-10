@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, request
 from extensions import db
-from models import User, BuildingUser
+from models import User
 from routes.utils import require_auth, require_roles
 
 

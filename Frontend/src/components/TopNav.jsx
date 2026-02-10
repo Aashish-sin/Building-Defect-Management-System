@@ -35,6 +35,18 @@ export function TopNav({ currentUser, onLogout }) {
     };
   }, [showDropdown]);
 
+  useEffect(() => {
+    const className = "nav-dropdown-open";
+    if (showDropdown) {
+      document.body.classList.add(className);
+    } else {
+      document.body.classList.remove(className);
+    }
+    return () => {
+      document.body.classList.remove(className);
+    };
+  }, [showDropdown]);
+
   return (
     <nav className="fixed top-0 left-0 right-0 h-16 bg-white border-b-2 border-gray-300 z-50">
       <div className="h-full px-4 sm:px-8 flex items-center justify-between">
@@ -106,7 +118,7 @@ export function TopNav({ currentUser, onLogout }) {
           </button>
 
           {showDropdown && (
-            <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg py-1 z-50 border-2 border-gray-700/60">
+            <div className="absolute right-0 top-full mt-2 w-56 bg-white rounded-lg py-1 z-50 border-2 border-gray-700/60">
               <div className="px-4 py-2 text-sm text-gray-700 border-b-2 border-gray-200">
                 <div className="font-medium">{currentUser.name}</div>
                 <div className="text-xs text-gray-500">{currentUser.email}</div>

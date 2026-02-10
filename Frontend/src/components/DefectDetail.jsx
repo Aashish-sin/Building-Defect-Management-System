@@ -271,28 +271,40 @@ export function DefectDetail({ currentUser }) {
     }
   };
 
-  const handleTechnicianPhotoChange = (e) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      setTechnicianPhotoFile(file);
+  const resizeImage = (file, width = 600, height = 420, quality = 0.8) =>
+    new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = () => {
         const img = new Image();
         img.onload = () => {
-          const maxSize = 1280;
-          const scale = Math.min(maxSize / img.width, maxSize / img.height, 1);
-          const width = Math.round(img.width * scale);
-          const height = Math.round(img.height * scale);
+          const scale = Math.max(width / img.width, height / img.height);
+          const scaledWidth = Math.round(img.width * scale);
+          const scaledHeight = Math.round(img.height * scale);
+          const offsetX = Math.round((width - scaledWidth) / 2);
+          const offsetY = Math.round((height - scaledHeight) / 2);
+
           const canvas = document.createElement("canvas");
           canvas.width = width;
           canvas.height = height;
           const ctx = canvas.getContext("2d");
-          ctx.drawImage(img, 0, 0, width, height);
-          setTechnicianPhotoPreview(canvas.toDataURL("image/jpeg", 0.8));
+          ctx.drawImage(img, offsetX, offsetY, scaledWidth, scaledHeight);
+
+          resolve(canvas.toDataURL("image/jpeg", quality));
         };
+        img.onerror = reject;
         img.src = reader.result;
       };
+      reader.onerror = reject;
       reader.readAsDataURL(file);
+    });
+
+  const handleTechnicianPhotoChange = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setTechnicianPhotoFile(file);
+      resizeImage(file)
+        .then((optimized) => setTechnicianPhotoPreview(optimized))
+        .catch(() => setTechnicianPhotoPreview(""));
     }
   };
 
@@ -326,35 +338,9 @@ export function DefectDetail({ currentUser }) {
     });
   };
 
-  const optimizeImage = (file, maxSize = 1280, quality = 0.8) =>
-    new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        const img = new Image();
-        img.onload = () => {
-          let { width, height } = img;
-          const scale = Math.min(maxSize / width, maxSize / height, 1);
-          width = Math.round(width * scale);
-          height = Math.round(height * scale);
-
-          const canvas = document.createElement("canvas");
-          canvas.width = width;
-          canvas.height = height;
-          const ctx = canvas.getContext("2d");
-          ctx.drawImage(img, 0, 0, width, height);
-
-          resolve(canvas.toDataURL("image/jpeg", quality));
-        };
-        img.onerror = reject;
-        img.src = reader.result;
-      };
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
-
   const handleImageUpdate = async (field, file) => {
     if (!file) return;
-    const optimized = await optimizeImage(file);
+    const optimized = await resizeImage(file);
     await handleAttributeUpdate(field, optimized);
   };
 
@@ -532,17 +518,6 @@ export function DefectDetail({ currentUser }) {
           </div>
         </div>
 
-        {/* Image Preview */}
-        {(defect.initial_report_image || defect.image_url) && (
-          <div className="mb-4">
-            <img
-              src={defect.initial_report_image || defect.image_url}
-              alt={defect.title}
-              className="w-full max-w-2xl h-64 object-cover rounded-lg border-2 border-gray-300"
-            />
-          </div>
-        )}
-
         {/* Description */}
         <div>
           <h3 className="text-sm font-medium text-gray-700 mb-2">
@@ -601,7 +576,13 @@ export function DefectDetail({ currentUser }) {
                 <img
                   src={defect.initial_report_image || defect.image_url}
                   alt="Initial report"
-                  className="w-full h-48 object-cover rounded-lg border-2 border-gray-300"
+                  className="object-cover rounded-lg border-2 border-gray-300"
+                  style={{
+                    width: "600px",
+                    height: "420px",
+                    margin: "0 auto",
+                    display: "block",
+                  }}
                 />
               ) : (
                 <div className="h-48 rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center text-sm text-gray-400">
@@ -653,7 +634,13 @@ export function DefectDetail({ currentUser }) {
                 <img
                   src={defect.technician_report_image}
                   alt="Technician report"
-                  className="w-full h-48 object-cover rounded-lg border-2 border-gray-300"
+                  className="object-cover rounded-lg border-2 border-gray-300"
+                  style={{
+                    width: "600px",
+                    height: "420px",
+                    margin: "0 auto",
+                    display: "block",
+                  }}
                 />
               ) : (
                 <div className="h-48 rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center text-sm text-gray-400">

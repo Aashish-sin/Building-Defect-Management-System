@@ -1226,3 +1226,7 @@ html {
     @apply inline-flex items-center px-2 py-0.5 rounded-full border border-gray-300 text-xs font-medium text-gray-700 bg-white;
   }
 }
+
+body.nav-dropdown-open #main-content {
+  padding-top: 16rem;
+}

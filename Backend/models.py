@@ -18,6 +18,19 @@ class User(db.Model):
     def check_password(self, password):
         return bcrypt.checkpw(password.encode('utf-8'), self.password_hash.encode('utf-8'))
 
+
+class RefreshToken(db.Model):
+    __tablename__ = 'refresh_tokens'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    token_hash = db.Column(db.String(64), unique=True, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    expires_at = db.Column(db.DateTime, nullable=False)
+    revoked_at = db.Column(db.DateTime, nullable=True)
+    replaced_by_token = db.Column(db.String(64), nullable=True)
+
+    user = db.relationship('User', backref=db.backref('refresh_tokens', lazy=True))
+
 class Building(db.Model):
     __tablename__ = 'buildings'
     id = db.Column(db.Integer, primary_key=True)

@@ -1,6 +1,4 @@
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
 from flask_cors import CORS
 import os
 from dotenv import load_dotenv
@@ -30,7 +28,7 @@ def create_app():
     db.init_app(app)
     migrate.init_app(app, db)
 
-    from models import User, Building, BuildingUser, Defect, DefectComment
+    from models import User, RefreshToken, Building, BuildingUser, Defect, DefectComment
     from routes.auth import auth_bp
     from routes.defects import defects_bp
     from routes.buildings import buildings_bp

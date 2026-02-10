@@ -7,7 +7,6 @@ import { Input } from "./ui/Input";
 import { Textarea } from "./ui/Textarea";
 import { Select } from "./ui/Select";
 import { Alert } from "./ui/Alert";
-import { LoadingSpinner } from "./ui/LoadingSpinner";
 
 export function DefectForm({ currentUser }) {
   const navigate = useNavigate();
@@ -42,22 +41,23 @@ export function DefectForm({ currentUser }) {
     }
   };
 
-  const optimizeImage = (file, maxSize = 1280, quality = 0.8) =>
+  const resizeImage = (file, width = 600, height = 420, quality = 0.8) =>
     new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = () => {
         const img = new Image();
         img.onload = () => {
-          let { width, height } = img;
-          const scale = Math.min(maxSize / width, maxSize / height, 1);
-          width = Math.round(width * scale);
-          height = Math.round(height * scale);
+          const scale = Math.max(width / img.width, height / img.height);
+          const scaledWidth = Math.round(img.width * scale);
+          const scaledHeight = Math.round(img.height * scale);
+          const offsetX = Math.round((width - scaledWidth) / 2);
+          const offsetY = Math.round((height - scaledHeight) / 2);
 
           const canvas = document.createElement("canvas");
           canvas.width = width;
           canvas.height = height;
           const ctx = canvas.getContext("2d");
-          ctx.drawImage(img, 0, 0, width, height);
+          ctx.drawImage(img, offsetX, offsetY, scaledWidth, scaledHeight);
 
           resolve(canvas.toDataURL("image/jpeg", quality));
         };
@@ -94,7 +94,7 @@ export function DefectForm({ currentUser }) {
 
     try {
       const initialReportImage = imageFile
-        ? await optimizeImage(imageFile)
+        ? await resizeImage(imageFile)
         : null;
       const defectData = {
         title: formData.title,
@@ -103,7 +103,6 @@ export function DefectForm({ currentUser }) {
         priority: formData.priority,
         initial_report: formData.initial_report,
         initial_report_image: initialReportImage,
-        image_url: initialReportImage,
         external_contractor: formData.external_contractor,
         contractor_name: formData.contractor_name || null,
       };
@@ -136,7 +135,7 @@ export function DefectForm({ currentUser }) {
       }
       setFormErrors((prev) => ({ ...prev, image: "" }));
       setImageFile(file);
-      optimizeImage(file)
+      resizeImage(file)
         .then((optimized) => setImagePreview(optimized))
         .catch(() => setImagePreview(""));
     }
@@ -187,6 +186,7 @@ export function DefectForm({ currentUser }) {
                 }
                 placeholder="Brief description of the defect"
                 error={formErrors.title}
+                className="bg-white"
               />
             </div>
           </div>
@@ -230,6 +230,7 @@ export function DefectForm({ currentUser }) {
                   setFormData({ ...formData, building_id: e.target.value })
                 }
                 error={formErrors.building_id}
+                className="bg-white"
               >
                 <option value="">Select a building</option>
                 {buildings.map((building) => (
@@ -257,6 +258,7 @@ export function DefectForm({ currentUser }) {
                   setFormData({ ...formData, priority: e.target.value })
                 }
                 error={formErrors.priority}
+                className="bg-white"
               >
                 <option value="low">Low</option>
                 <option value="medium">Medium</option>
@@ -266,7 +268,7 @@ export function DefectForm({ currentUser }) {
           </div>
 
           {/* Initial Report */}
-          {role === "csr" && (
+          {["csr", "admin", "building_executive"].includes(role) && (
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Initial Report
@@ -277,7 +279,7 @@ export function DefectForm({ currentUser }) {
                   setFormData({ ...formData, initial_report: e.target.value })
                 }
                 rows={4}
-                className="w-full px-3 py-2 border-2 border-gray-300 rounded-md focus:ring-2 focus:ring-gray-400 focus:border-gray-600"
+                className="w-full px-3 py-2 border-2 border-gray-300 rounded-md bg-white focus:ring-2 focus:ring-gray-400 focus:border-gray-600"
                 placeholder="Your initial report of the defect..."
               />
             </div>
@@ -361,7 +363,13 @@ export function DefectForm({ currentUser }) {
                   <img
                     src={imagePreview}
                     alt="Initial report preview"
-                    className="mt-4 w-full max-w-sm rounded-md border-2 border-gray-300"
+                    className="mt-4 object-cover rounded-md border-2 border-gray-300"
+                    style={{
+                      width: "600px",
+                      height: "420px",
+                      margin: "0 auto",
+                      display: "block",
+                    }}
                   />
                 )}
               </div>

@@ -1,7 +1,7 @@
 import datetime
 from flask import Blueprint, request, jsonify
 from extensions import db
-from models import Defect, DefectComment, Building, BuildingUser, User
+from models import Defect, DefectComment, Building, User
 from routes.utils import require_auth, require_roles, user_has_building_access
 
 
@@ -365,7 +365,7 @@ def delete_defect(user, defect_id):
         return jsonify({'message': 'Failed to delete defect'}), 500
 
 
-@defects_bp.route('/<int:defect_id>/comments', methods=['POST'])
+@defects_bp.route('/<int:defect_id>/comments', methods=['PATCH'])
 @require_auth
 def upsert_comments(user, defect_id):
     defect = Defect.query.get(defect_id)

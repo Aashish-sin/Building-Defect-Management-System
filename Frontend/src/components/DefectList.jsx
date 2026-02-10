@@ -5,7 +5,7 @@ import { defectsAPI, buildingsAPI, usersAPI } from "../services/api";
 import { Button } from "./ui/Button";
 import { Select } from "./ui/Select";
 import { SearchInput } from "./ui/SearchInput";
-import { StatusBadge } from "./ui/Badge";
+import { StatusBadge, PriorityBadge } from "./ui/Badge";
 import { Pagination } from "./ui/Pagination";
 import { TableSkeleton } from "./ui/LoadingSkeleton";
 import { Alert } from "./ui/Alert";
@@ -248,9 +248,10 @@ export function DefectList({ currentUser }) {
             <colgroup>
               <col style={{ width: "28%" }} />
               <col style={{ width: "24%" }} />
+              <col style={{ width: "12%" }} />
+              <col style={{ width: "12%" }} />
               <col style={{ width: "14%" }} />
-              <col style={{ width: "18%" }} />
-              <col style={{ width: "10%" }} />
+              <col style={{ width: "8%" }} />
               <col style={{ width: "6%" }} />
             </colgroup>
             <thead className="bg-gray-100 border-b border-gray-200">
@@ -310,6 +311,25 @@ export function DefectList({ currentUser }) {
                     className="inline-flex items-center gap-1 focus:outline-none focus:underline"
                   >
                     Status
+                  </button>
+                </th>
+                <th
+                  scope="col"
+                  aria-sort={
+                    sortConfig.key === "priority"
+                      ? sortConfig.direction === "asc"
+                        ? "ascending"
+                        : "descending"
+                      : "none"
+                  }
+                  className="px-6 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider"
+                >
+                  <button
+                    type="button"
+                    onClick={() => handleSort("priority")}
+                    className="inline-flex items-center gap-1 focus:outline-none focus:underline"
+                  >
+                    Priority
                   </button>
                 </th>
                 <th
@@ -385,6 +405,9 @@ export function DefectList({ currentUser }) {
                       <td className="px-6 py-4 text-center">
                         <StatusBadge status={defect.status} />
                       </td>
+                      <td className="px-6 py-4 text-center">
+                        <PriorityBadge priority={defect.priority} />
+                      </td>
                       <td className="px-6 py-4 text-center text-sm text-gray-600">
                         {assignee?.name || "—"}
                       </td>
@@ -406,7 +429,7 @@ export function DefectList({ currentUser }) {
                 })
               ) : (
                 <tr>
-                  <td colSpan="6" className="px-6 py-12 text-center">
+                  <td colSpan="7" className="px-6 py-12 text-center">
                     <div className="flex flex-col items-center gap-2 text-gray-500">
                       <AlertTriangle className="w-8 h-8" aria-hidden="true" />
                       <p>No defects found matching your filters.</p>

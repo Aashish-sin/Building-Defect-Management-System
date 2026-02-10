@@ -1,9 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { authAPI } from "../services/api";
-import { Input } from "./ui/Input";
 import { PasswordInput } from "./ui/PasswordInput";
-import { Select } from "./ui/Select";
 import { Alert } from "./ui/Alert";
 import { useToast } from "./ui/Toast";
 
