@@ -181,8 +181,8 @@ https://github.com/Aashish-sin/Building-Defect-Management-System/tree/main/Front
 
 ## Future Updates
 
-- Work to resolve more edge cases
-- Work on a mobile Nav
+- Work to allow system to be more robust : Add more user types and allow for restriction technicaian to be based on building if needed
+- Work on a simple mobile version for more seamless defect logging
 
 ## License
 
