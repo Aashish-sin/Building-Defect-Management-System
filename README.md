@@ -2,12 +2,16 @@
 
 A Flask-based REST API for managing building defects with role-based access control.
 
+## Screenshot of App
+
+![alt text](image.png)
+
 ## Technologies Used
 
 - Python 3.x
 - Flask
 - PostgreSQL
-- SQLAlchemy
+- SQLAlchemy as ORM
 - JWT Authentication
 - Flask-CORS
 - Flask-Migrate
@@ -166,6 +170,10 @@ The API will be available at `http://localhost:5000`
 ### Defect Comments
 
 - id, defect_id, csr_prognosis, executive_decision, technician_report, verification_report, final_completion, created_at, updated_at
+
+## Entire Data Model
+
+![alt text](image-1.png)
 
 ## Frontend Repository
 

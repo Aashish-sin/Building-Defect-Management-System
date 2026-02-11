@@ -82,6 +82,10 @@ def _get_or_create_comments(defect_id):
     return comments
 
 
+def _is_deleted(defect):
+    return defect.deleted_at is not None
+
+
 @defects_bp.route('', methods=['POST'])
 @require_auth
 def create_defect(user):
@@ -124,10 +128,11 @@ def create_defect(user):
 @require_auth
 def list_defects(user):
     role = _normalize_role(user.role)
+    query = Defect.query.filter(Defect.deleted_at.is_(None))
     if role in ['admin', 'csr', 'building_executive']:
-        defects = Defect.query.all()
+        defects = query.all()
     elif role == 'technician':
-        defects = Defect.query.filter_by(assigned_technician_id=user.id).all()
+        defects = query.filter_by(assigned_technician_id=user.id).all()
     else:
         defects = []
 
@@ -138,7 +143,7 @@ def list_defects(user):
 @require_auth
 def get_defect(user, defect_id):
     defect = Defect.query.get(defect_id)
-    if not defect:
+    if not defect or _is_deleted(defect):
         return jsonify({'message': 'Defect not found'}), 404
     if not _can_access_defect(user, defect):
         return jsonify({'message': 'Forbidden'}), 403
@@ -149,7 +154,7 @@ def get_defect(user, defect_id):
 @require_auth
 def update_defect(user, defect_id):
     defect = Defect.query.get(defect_id)
-    if not defect:
+    if not defect or _is_deleted(defect):
         return jsonify({'message': 'Defect not found'}), 404
 
     role = _normalize_role(user.role)
@@ -192,7 +197,7 @@ def update_defect(user, defect_id):
 @require_auth
 def review_defect(user, defect_id):
     defect = Defect.query.get(defect_id)
-    if not defect:
+    if not defect or _is_deleted(defect):
         return jsonify({'message': 'Defect not found'}), 404
 
     role = _normalize_role(user.role)
@@ -219,7 +224,7 @@ def review_defect(user, defect_id):
 @require_auth
 def assign_technician(user, defect_id):
     defect = Defect.query.get(defect_id)
-    if not defect:
+    if not defect or _is_deleted(defect):
         return jsonify({'message': 'Defect not found'}), 404
 
     role = _normalize_role(user.role)
@@ -250,7 +255,7 @@ def assign_technician(user, defect_id):
 @require_auth
 def mark_ongoing(user, defect_id):
     defect = Defect.query.get(defect_id)
-    if not defect:
+    if not defect or _is_deleted(defect):
         return jsonify({'message': 'Defect not found'}), 404
 
     role = _normalize_role(user.role)
@@ -274,7 +279,7 @@ def mark_ongoing(user, defect_id):
 @require_auth
 def mark_done(user, defect_id):
     defect = Defect.query.get(defect_id)
-    if not defect:
+    if not defect or _is_deleted(defect):
         return jsonify({'message': 'Defect not found'}), 404
 
     role = _normalize_role(user.role)
@@ -303,7 +308,7 @@ def mark_done(user, defect_id):
 @require_auth
 def mark_complete(user, defect_id):
     defect = Defect.query.get(defect_id)
-    if not defect:
+    if not defect or _is_deleted(defect):
         return jsonify({'message': 'Defect not found'}), 404
 
     role = _normalize_role(user.role)
@@ -328,7 +333,7 @@ def mark_complete(user, defect_id):
 @require_auth
 def reopen_defect(user, defect_id):
     defect = Defect.query.get(defect_id)
-    if not defect:
+    if not defect or _is_deleted(defect):
         return jsonify({'message': 'Defect not found'}), 404
 
     role = _normalize_role(user.role)
@@ -346,30 +351,24 @@ def reopen_defect(user, defect_id):
 @require_auth
 @require_roles('admin')
 def delete_defect(user, defect_id):
-    try:
-        db.session.execute(
-            DefectComment.__table__.delete().where(
-                DefectComment.defect_id == defect_id
-            )
-        )
-        result = db.session.execute(
-            Defect.__table__.delete().where(Defect.id == defect_id)
-        )
-        if result.rowcount == 0:
-            db.session.rollback()
-            return jsonify({'message': 'Defect not found'}), 404
-        db.session.commit()
-        return jsonify({'message': 'Defect deleted'})
-    except Exception:
-        db.session.rollback()
-        return jsonify({'message': 'Failed to delete defect'}), 500
+    defect = Defect.query.get(defect_id)
+    if not defect:
+        return jsonify({'message': 'Defect not found'}), 404
+    if _is_deleted(defect):
+        return jsonify({'message': 'Defect already deleted'}), 409
+
+    defect.deleted_at = datetime.datetime.utcnow()
+    defect.deleted_by_id = user.id
+    defect.updated_at = defect.deleted_at
+    db.session.commit()
+    return jsonify({'message': 'Defect deleted'})
 
 
 @defects_bp.route('/<int:defect_id>/comments', methods=['PATCH'])
 @require_auth
 def upsert_comments(user, defect_id):
     defect = Defect.query.get(defect_id)
-    if not defect:
+    if not defect or _is_deleted(defect):
         return jsonify({'message': 'Defect not found'}), 404
     if not _can_access_defect(user, defect):
         return jsonify({'message': 'Forbidden'}), 403
@@ -408,7 +407,7 @@ def upsert_comments(user, defect_id):
 @require_auth
 def get_comments(user, defect_id):
     defect = Defect.query.get(defect_id)
-    if not defect:
+    if not defect or _is_deleted(defect):
         return jsonify({'message': 'Defect not found'}), 404
     if not _can_access_defect(user, defect):
         return jsonify({'message': 'Forbidden'}), 403

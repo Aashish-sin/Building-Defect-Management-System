@@ -57,12 +57,15 @@ class Defect(db.Model):
     contractor_name = db.Column(db.String, nullable=True)
     done_at = db.Column(db.DateTime, nullable=True)
     completed_at = db.Column(db.DateTime, nullable=True)
+    deleted_at = db.Column(db.DateTime, nullable=True)
+    deleted_by_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
 
     reporter = db.relationship('User', foreign_keys=[reporter_id])
     reviewer = db.relationship('User', foreign_keys=[reviewed_by_id])
     technician = db.relationship('User', foreign_keys=[assigned_technician_id])
+    deleted_by = db.relationship('User', foreign_keys=[deleted_by_id])
     building = db.relationship('Building', backref=db.backref('defects', lazy=True))
 
 

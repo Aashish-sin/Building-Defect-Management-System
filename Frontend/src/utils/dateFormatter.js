@@ -13,23 +13,23 @@ export function formatDate(dateString, options = {}) {
   if (!date) return "—";
 
   const defaultOptions = {
+    day: "2-digit",
+    month: "2-digit",
     year: "numeric",
-    month: "short",
-    day: "numeric",
     ...options,
   };
 
-  return date.toLocaleDateString("en-US", defaultOptions);
+  return date.toLocaleDateString("en-GB", defaultOptions);
 }
 
 export function formatDateTime(dateString) {
   const date = normalizeDate(dateString);
   if (!date) return "—";
 
-  return date.toLocaleString("en-US", {
+  return date.toLocaleString("en-GB", {
+    day: "2-digit",
+    month: "2-digit",
     year: "numeric",
-    month: "short",
-    day: "numeric",
     hour: "2-digit",
     minute: "2-digit",
   });

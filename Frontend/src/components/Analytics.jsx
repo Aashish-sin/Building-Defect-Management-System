@@ -7,7 +7,7 @@ import {
   Download,
 } from "lucide-react";
 import ExcelJS from "exceljs";
-import { defectsAPI } from "../services/api";
+import { defectsAPI, analyticsAPI } from "../services/api";
 import { LoadingSkeleton } from "./ui/LoadingSkeleton";
 import { Alert } from "./ui/Alert";
 import { Button } from "./ui/Button";
@@ -100,27 +100,92 @@ export function Analytics({ currentUser }) {
     );
   }).length;
 
-  const handleDownloadXlsx = async () => {
+  const handleDownloadDatabaseXlsx = async () => {
     try {
+      const response = await analyticsAPI.exportDatabase();
+      const { users, buildings, defects, defect_comments } = response.data;
+
       const workbook = new ExcelJS.Workbook();
-      const worksheet = workbook.addWorksheet("Defects");
-      worksheet.columns = [
+
+      const usersSheet = workbook.addWorksheet("Users");
+      usersSheet.columns = [
+        { header: "ID", key: "id", width: 10 },
+        { header: "Name", key: "name", width: 26 },
+        { header: "Email", key: "email", width: 30 },
+        { header: "Role", key: "role", width: 18 },
+        { header: "Created At", key: "created_at", width: 24 },
+        { header: "Updated At", key: "updated_at", width: 24 },
+      ];
+      users.forEach((user) => usersSheet.addRow(user));
+
+      const buildingsSheet = workbook.addWorksheet("Buildings");
+      buildingsSheet.columns = [
+        { header: "ID", key: "id", width: 10 },
+        { header: "Name", key: "name", width: 28 },
+        { header: "Address", key: "address", width: 40 },
+        { header: "Created At", key: "created_at", width: 24 },
+        { header: "Updated At", key: "updated_at", width: 24 },
+      ];
+      buildings.forEach((building) => buildingsSheet.addRow(building));
+
+      const defectsSheet = workbook.addWorksheet("Defects");
+      defectsSheet.columns = [
         { header: "ID", key: "id", width: 10 },
         { header: "Title", key: "title", width: 40 },
+        { header: "Description", key: "description", width: 50 },
         { header: "Status", key: "status", width: 14 },
         { header: "Priority", key: "priority", width: 12 },
+        { header: "Image URL", key: "image_url", width: 30 },
+        {
+          header: "Initial Report Image",
+          key: "initial_report_image",
+          width: 30,
+        },
+        {
+          header: "Technician Report Image",
+          key: "technician_report_image",
+          width: 30,
+        },
+        { header: "Building ID", key: "building_id", width: 12 },
+        { header: "Reporter ID", key: "reporter_id", width: 12 },
+        { header: "Reviewed By", key: "reviewed_by", width: 12 },
+        {
+          header: "Assigned Technician ID",
+          key: "assigned_technician_id",
+          width: 18,
+        },
+        {
+          header: "External Contractor",
+          key: "external_contractor",
+          width: 18,
+        },
+        { header: "Contractor Name", key: "contractor_name", width: 24 },
+        { header: "Done At", key: "done_at", width: 24 },
+        { header: "Completed At", key: "completed_at", width: 24 },
+        { header: "Deleted At", key: "deleted_at", width: 24 },
+        { header: "Deleted By ID", key: "deleted_by_id", width: 16 },
         { header: "Created At", key: "created_at", width: 24 },
+        { header: "Updated At", key: "updated_at", width: 24 },
       ];
+      defects.forEach((defect) => defectsSheet.addRow(defect));
 
-      defects.forEach((defect) => {
-        worksheet.addRow({
-          id: defect.id,
-          title: defect.title,
-          status: defect.status,
-          priority: defect.priority,
-          created_at: defect.created_at,
-        });
-      });
+      const commentsSheet = workbook.addWorksheet("Defect Comments");
+      commentsSheet.columns = [
+        { header: "ID", key: "id", width: 10 },
+        { header: "Defect ID", key: "defect_id", width: 12 },
+        { header: "Initial Report", key: "initial_report", width: 40 },
+        { header: "Executive Decision", key: "executive_decision", width: 40 },
+        { header: "Technician Report", key: "technician_report", width: 40 },
+        {
+          header: "Verification Report",
+          key: "verification_report",
+          width: 40,
+        },
+        { header: "Final Completion", key: "final_completion", width: 40 },
+        { header: "Created At", key: "created_at", width: 24 },
+        { header: "Updated At", key: "updated_at", width: 24 },
+      ];
+      defect_comments.forEach((comment) => commentsSheet.addRow(comment));
 
       const buffer = await workbook.xlsx.writeBuffer();
       const blob = new Blob([buffer], {
@@ -129,13 +194,13 @@ export function Analytics({ currentUser }) {
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", "defects-analytics.xlsx");
+      link.setAttribute("download", "bdms-full-database.xlsx");
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
     } catch (err) {
-      setError("Failed to download XLSX.");
+      setError("Failed to download full database XLSX.");
     }
   };
 
@@ -153,22 +218,9 @@ export function Analytics({ currentUser }) {
       </div>
 
       {/* Key Metrics */}
-      <div
-        className="mb-6"
-        style={{
-          display: "flex",
-          gap: "1.5rem",
-          justifyContent: "space-between",
-        }}
-      >
-        <dl
-          className="wf-panel-soft p-6"
-          style={{ textAlign: "left", flex: "1 1 0" }}
-        >
-          <div
-            className="flex items-center gap-3 mb-2"
-            style={{ justifyContent: "flex-start" }}
-          >
+      <div className="mb-6 flex flex-col md:flex-row gap-6 justify-between">
+        <dl className="wf-panel-soft p-6 flex-1 text-left">
+          <div className="flex items-center gap-3 mb-2 justify-start">
             <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
               <Clock className="w-5 h-5 text-green-700" aria-hidden="true" />
             </div>
@@ -181,14 +233,8 @@ export function Analytics({ currentUser }) {
           </div>
         </dl>
 
-        <dl
-          className="wf-panel-soft p-6"
-          style={{ textAlign: "center", flex: "1 1 0" }}
-        >
-          <div
-            className="flex items-center gap-3 mb-2"
-            style={{ justifyContent: "center" }}
-          >
+        <dl className="wf-panel-soft p-6 flex-1 text-center">
+          <div className="flex items-center gap-3 mb-2 justify-center">
             <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
               <AlertCircle
                 className="w-5 h-5 text-blue-700"
@@ -204,14 +250,8 @@ export function Analytics({ currentUser }) {
           </div>
         </dl>
 
-        <dl
-          className="wf-panel-soft p-6"
-          style={{ textAlign: "right", flex: "1 1 0" }}
-        >
-          <div
-            className="flex items-center gap-3 mb-2"
-            style={{ justifyContent: "flex-end" }}
-          >
+        <dl className="wf-panel-soft p-6 flex-1 text-right">
+          <div className="flex items-center gap-3 mb-2 justify-end">
             <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
               <TrendingUp
                 className="w-5 h-5 text-purple-700"
@@ -348,14 +388,14 @@ export function Analytics({ currentUser }) {
         </div>
       </div>
 
-      <div className="mt-6 flex flex-col sm:flex-row sm:items-center sm:justify-end gap-3">
+      <div className="mt-6 flex justify-center">
         <Button
           size="sm"
-          onClick={handleDownloadXlsx}
+          onClick={handleDownloadDatabaseXlsx}
           className="bg-sky-400 text-white border-2 border-sky-500 hover:bg-sky-500"
         >
           <Download className="w-4 h-4" aria-hidden="true" />
-          Download XLSX
+          Save Data as .xlsx
         </Button>
       </div>
     </div>

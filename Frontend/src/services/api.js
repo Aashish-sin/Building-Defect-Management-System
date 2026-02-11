@@ -144,6 +144,7 @@ export const usersAPI = {
 export const analyticsAPI = {
   getDefectsPerBuilding: () => api.get("/analytics/defects-per-building"),
   getDefectsStatus: () => api.get("/analytics/defects-status"),
+  exportDatabase: () => api.get("/analytics/export"),
 };
 
 export default api;

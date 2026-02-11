@@ -241,18 +241,15 @@ export function DefectList({ currentUser }) {
       <div className="wf-panel p-0 bg-white rounded-lg overflow-hidden w-full">
         {/* Desktop Table */}
         <div className="overflow-x-auto">
-          <table
-            className="w-full"
-            style={{ width: "100%", tableLayout: "fixed" }}
-          >
+          <table className="w-full table-fixed wf-table">
             <colgroup>
-              <col style={{ width: "28%" }} />
-              <col style={{ width: "24%" }} />
-              <col style={{ width: "12%" }} />
-              <col style={{ width: "12%" }} />
-              <col style={{ width: "14%" }} />
-              <col style={{ width: "8%" }} />
-              <col style={{ width: "6%" }} />
+              <col className="w-[28%]" />
+              <col className="w-[24%]" />
+              <col className="w-[12%]" />
+              <col className="w-[12%]" />
+              <col className="w-[14%]" />
+              <col className="w-[8%]" />
+              <col className="w-[6%]" />
             </colgroup>
             <thead className="bg-gray-100 border-b border-gray-200">
               <tr>

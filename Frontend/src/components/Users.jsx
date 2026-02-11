@@ -208,7 +208,7 @@ export function Users({ currentUser }) {
       {/* Desktop Table */}
       <div className="hidden md:block wf-panel p-0 bg-white rounded-lg overflow-hidden w-full">
         <div className="overflow-x-auto">
-          <table className="w-full">
+          <table className="w-full wf-table">
             <thead className="bg-gray-100 border-b border-gray-200">
               <tr>
                 <th
@@ -296,58 +296,6 @@ export function Users({ currentUser }) {
             </tbody>
           </table>
         </div>
-      </div>
-
-      {/* Mobile Cards */}
-      <div className="md:hidden space-y-4">
-        {users.map((user) => (
-          <article key={user.id} className="wf-panel-soft p-4">
-            <div className="flex items-start justify-between mb-3">
-              <div className="flex items-center gap-3">
-                <UserCircle
-                  className="w-10 h-10 text-gray-400"
-                  aria-hidden="true"
-                />
-                <div>
-                  <h3 className="text-sm font-medium text-gray-900">
-                    {user.name}
-                  </h3>
-                  <p className="text-xs text-gray-500 flex items-center gap-1 mt-1">
-                    <Mail className="w-3 h-3" aria-hidden="true" />
-                    {user.email}
-                  </p>
-                </div>
-              </div>
-              <Badge variant={getRoleBadgeVariant(user.role)}>
-                {formatRole(user.role)}
-              </Badge>
-            </div>
-            <div className="flex gap-2 pt-3 border-t border-gray-100">
-              <Button
-                size="sm"
-                onClick={() => handleOpenModal(user)}
-                className="flex-1 bg-sky-400 text-white border-2 border-sky-500 hover:bg-sky-500"
-              >
-                <Edit2 className="w-4 h-4" aria-hidden="true" />
-                Edit
-              </Button>
-              {user.id !== currentUser.id ? (
-                <Button
-                  size="sm"
-                  onClick={() => handleDeleteClick(user)}
-                  className="flex-1 bg-sky-400 text-white border-2 border-sky-500 hover:bg-sky-500"
-                >
-                  <Trash2 className="w-4 h-4" aria-hidden="true" />
-                  Delete
-                </Button>
-              ) : (
-                <div className="flex-1 text-xs text-gray-500 flex items-center justify-center">
-                  You
-                </div>
-              )}
-            </div>
-          </article>
-        ))}
       </div>
 
       {/* Add/Edit User Modal */}

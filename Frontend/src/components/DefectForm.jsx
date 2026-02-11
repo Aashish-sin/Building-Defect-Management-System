@@ -142,7 +142,7 @@ export function DefectForm({ currentUser }) {
   };
 
   return (
-    <div className="w-full mx-auto" style={{ maxWidth: "72rem" }}>
+    <div className="w-full mx-auto max-w-6xl">
       <Button
         size="sm"
         onClick={() => navigate("/defects")}
@@ -336,7 +336,7 @@ export function DefectForm({ currentUser }) {
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Image Upload
             </label>
-            <div className="border-2 border-dashed border-gray-300 rounded-md p-6">
+            <div className="border-2 border-dashed border-gray-300 rounded-md p-6 hover:border-sky-400 hover:bg-sky-50/30 transition-all duration-200">
               <div className="flex flex-col items-center">
                 <Upload className="w-12 h-12 text-gray-400 mb-3" />
                 <input
@@ -363,13 +363,7 @@ export function DefectForm({ currentUser }) {
                   <img
                     src={imagePreview}
                     alt="Initial report preview"
-                    className="mt-4 object-cover rounded-md border-2 border-gray-300"
-                    style={{
-                      width: "600px",
-                      height: "420px",
-                      margin: "0 auto",
-                      display: "block",
-                    }}
+                    className="mt-4 object-cover rounded-md border-2 border-gray-300 w-[160px] h-[120px] mx-auto block"
                   />
                 )}
               </div>

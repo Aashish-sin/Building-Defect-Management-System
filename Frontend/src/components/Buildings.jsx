@@ -117,7 +117,7 @@ export function Buildings({ currentUser }) {
 
   if (!["admin", "building_executive", "csr"].includes(currentUser.role)) {
     return (
-      <div className="max-w-7xl text-center py-12">
+      <div className="max-w-7xl mx-auto text-center py-12">
         <p className="text-gray-600">
           You don't have permission to access this page.
         </p>
@@ -127,7 +127,7 @@ export function Buildings({ currentUser }) {
 
   if (loading) {
     return (
-      <div className="max-w-7xl">
+      <div className="max-w-7xl mx-auto">
         <div className="mb-6">
           <div className="h-8 w-32 bg-gray-200 rounded animate-pulse"></div>
         </div>
@@ -142,7 +142,7 @@ export function Buildings({ currentUser }) {
 
   if (error) {
     return (
-      <div className="max-w-7xl">
+      <div className="max-w-7xl mx-auto">
         <div className="text-center py-12 text-red-600" role="alert">
           {error}
         </div>
@@ -151,7 +151,7 @@ export function Buildings({ currentUser }) {
   }
 
   return (
-    <div className="max-w-7xl">
+    <div className="max-w-7xl mx-auto">
       <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <h1 className="text-2xl font-semibold text-gray-900">Buildings</h1>
         {canManage && (
@@ -184,18 +184,15 @@ export function Buildings({ currentUser }) {
           )}
         </div>
       ) : (
-        <section className="wf-panel p-0 bg-white rounded-lg overflow-hidden mx-auto max-w-2xs-plus">
+        <section className="wf-panel p-0 bg-white rounded-lg overflow-hidden mx-auto max-w-4xl shadow-md">
           <div className="overflow-x-auto">
-            <table className="w-full">
+            <table className="w-full wf-table">
               <thead className="bg-gray-100 border-b border-gray-200">
                 <tr>
                   <th className="px-6 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
                     Building
                   </th>
-                  <th
-                    className="px-6 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider"
-                    style={{ width: "75%" }}
-                  >
+                  <th className="px-6 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider w-3/4">
                     Address
                   </th>
                   {canManage && (
@@ -228,10 +225,7 @@ export function Buildings({ currentUser }) {
                         </span>
                       </div>
                     </td>
-                    <td
-                      className="px-6 py-4 text-center"
-                      style={{ width: "75%" }}
-                    >
+                    <td className="px-6 py-4 text-center w-3/4">
                       <div className="flex items-start justify-center gap-1.5 text-sm text-gray-600">
                         <MapPin
                           className="w-4 h-4 mt-0.5 flex-shrink-0"

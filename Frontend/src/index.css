@@ -120,6 +120,11 @@
     line-height: inherit;
   }
 
+  body.nav-dropdown-open {
+    overflow-x: hidden;
+    overflow-y: hidden;
+  }
+
   hr {
     height: 0;
     color: inherit;
@@ -1220,6 +1225,15 @@ html {
 
   .wf-table-row {
     @apply border-b border-gray-200 hover:bg-gray-50;
+  }
+
+  .wf-table {
+    border-collapse: collapse;
+  }
+
+  .wf-table th + th,
+  .wf-table td + td {
+    border-left: 1px solid var(--color-gray-200);
   }
 
   .wf-pill {

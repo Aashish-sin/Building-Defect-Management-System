@@ -576,13 +576,7 @@ export function DefectDetail({ currentUser }) {
                 <img
                   src={defect.initial_report_image || defect.image_url}
                   alt="Initial report"
-                  className="object-cover rounded-lg border-2 border-gray-300"
-                  style={{
-                    width: "600px",
-                    height: "420px",
-                    margin: "0 auto",
-                    display: "block",
-                  }}
+                  className="object-cover rounded-lg border-2 border-gray-300 w-[160px] h-[120px] mx-auto block"
                 />
               ) : (
                 <div className="h-48 rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center text-sm text-gray-400">
@@ -634,13 +628,7 @@ export function DefectDetail({ currentUser }) {
                 <img
                   src={defect.technician_report_image}
                   alt="Technician report"
-                  className="object-cover rounded-lg border-2 border-gray-300"
-                  style={{
-                    width: "600px",
-                    height: "420px",
-                    margin: "0 auto",
-                    display: "block",
-                  }}
+                  className="object-cover rounded-lg border-2 border-gray-300 w-[160px] h-[120px] mx-auto block"
                 />
               ) : (
                 <div className="h-48 rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center text-sm text-gray-400">
@@ -681,7 +669,7 @@ export function DefectDetail({ currentUser }) {
                   type="text"
                   value={contractorNameInput}
                   onChange={(e) => setContractorNameInput(e.target.value)}
-                  className="w-full px-3 py-2 border-2 border-gray-300 rounded-md focus:ring-2 focus:ring-gray-400 focus:border-gray-600"
+                  className="w-full px-3 py-2 border-2 border-gray-300 rounded-md bg-white focus:ring-2 focus:ring-gray-400 focus:border-gray-600"
                   placeholder="Enter contractor name"
                 />
                 <div className="mt-2 flex items-center gap-2">
@@ -722,7 +710,7 @@ export function DefectDetail({ currentUser }) {
               <select
                 value={assignTechId}
                 onChange={(e) => setAssignTechId(e.target.value)}
-                className="w-full sm:max-w-xs px-3 py-2 border-2 border-gray-300 rounded-md focus:ring-2 focus:ring-gray-400 focus:border-gray-600"
+                className="w-full sm:max-w-xs px-3 py-2 border-2 border-gray-300 rounded-md bg-white focus:ring-2 focus:ring-gray-400 focus:border-gray-600"
               >
                 <option value="">Select technician</option>
                 {technicians.map((tech) => (

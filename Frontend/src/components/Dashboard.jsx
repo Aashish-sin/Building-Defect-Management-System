@@ -56,7 +56,7 @@ export function Dashboard({ currentUser }) {
 
   if (loading) {
     return (
-      <div className="max-w-7xl">
+      <div className="max-w-7xl mx-auto">
         <div className="mb-8">
           <div className="h-8 w-48 bg-gray-200 rounded animate-pulse mb-2"></div>
           <div className="h-6 w-64 bg-gray-200 rounded animate-pulse"></div>
@@ -74,21 +74,21 @@ export function Dashboard({ currentUser }) {
 
   if (error) {
     return (
-      <div className="max-w-7xl py-12">
+      <div className="max-w-7xl mx-auto py-12">
         <Alert type="error" message={error} dismissible={false} />
       </div>
     );
   }
 
   return (
-    <div className="max-w-7xl">
+    <div className="max-w-7xl mx-auto">
       <div className="mb-8">
         <h1 className="text-2xl font-semibold text-gray-900 mb-2">Dashboard</h1>
         <p className="text-gray-600">Welcome back, {currentUser.name}</p>
       </div>
 
       <section
-        className="wf-panel p-0 bg-white mb-8 mx-auto max-w-2xs-plus rounded-lg overflow-hidden"
+        className="wf-panel p-0 bg-white mb-8 mx-auto max-w-4xl rounded-lg overflow-hidden shadow-sm"
         aria-label="Defect stats"
       >
         {statRows.map((stat, index) => (
@@ -105,7 +105,7 @@ export function Dashboard({ currentUser }) {
       </section>
 
       <section
-        className="wf-panel p-0 bg-white rounded-lg overflow-hidden mx-auto max-w-2xs-plus"
+        className="wf-panel p-0 bg-white rounded-lg overflow-hidden mx-auto max-w-4xl shadow-sm"
         aria-labelledby="recent-activity-heading"
       >
         <div className="px-6 py-4 border-b border-gray-200">
