@@ -8,8 +8,11 @@ export function Pagination({
   itemsPerPage,
   totalItems,
 }) {
-  const startItem = (currentPage - 1) * itemsPerPage + 1;
-  const endItem = Math.min(currentPage * itemsPerPage, totalItems);
+  // Ensure currentPage is a number to prevent "1" === 1 failing
+  const current = Number(currentPage);
+
+  const startItem = (current - 1) * itemsPerPage + 1;
+  const endItem = Math.min(current * itemsPerPage, totalItems);
 
   const getPageNumbers = () => {
     const pages = [];
@@ -20,18 +23,18 @@ export function Pagination({
         pages.push(i);
       }
     } else {
-      if (currentPage <= 3) {
+      if (current <= 3) {
         for (let i = 1; i <= 5; i++) pages.push(i);
         pages.push("...");
         pages.push(totalPages);
-      } else if (currentPage >= totalPages - 2) {
+      } else if (current >= totalPages - 2) {
         pages.push(1);
         pages.push("...");
         for (let i = totalPages - 4; i <= totalPages; i++) pages.push(i);
       } else {
         pages.push(1);
         pages.push("...");
-        for (let i = currentPage - 1; i <= currentPage + 1; i++) pages.push(i);
+        for (let i = current - 1; i <= current + 1; i++) pages.push(i);
         pages.push("...");
         pages.push(totalPages);
       }
@@ -56,8 +59,8 @@ export function Pagination({
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => onPageChange(currentPage - 1)}
-          disabled={currentPage === 1}
+          onClick={() => onPageChange(current - 1)}
+          disabled={current === 1}
           aria-label="Previous page"
         >
           <ChevronLeft className="w-4 h-4" />
@@ -65,37 +68,42 @@ export function Pagination({
         </Button>
 
         <div className="hidden md:flex gap-1">
-          {getPageNumbers().map((page, index) =>
-            page === "..." ? (
+          {getPageNumbers().map((page, index) => {
+            // Check if this is the active page
+            const isActive = page === current;
+
+            return page === "..." ? (
               <span
                 key={`ellipsis-${index}`}
-                className="px-3 py-1 text-gray-500"
+                className="px-3 py-1 text-gray-500 flex items-center justify-center"
               >
                 ...
               </span>
             ) : (
               <button
                 key={page}
+                type="button"
                 onClick={() => onPageChange(page)}
                 aria-label={`Go to page ${page}`}
-                aria-current={currentPage === page ? "page" : undefined}
-                className={`px-3 py-1 rounded-md text-sm font-medium transition-colors border focus:outline-none focus:ring-2 focus:ring-gray-400 ${
-                  currentPage === page
-                    ? "bg-gray-900 text-white border-gray-900"
-                    : "text-gray-700 border-gray-300 hover:bg-gray-100"
+                aria-current={isActive ? "page" : undefined}
+                // FIX: Added min-w-[2rem] for shape and changed colors to blue-600 for better visibility
+                className={`min-w-[2rem] px-3 py-1 rounded-md text-sm font-medium transition-colors border focus:outline-none focus:ring-2 focus:ring-blue-400 ${
+                  isActive
+                    ? "bg-blue-600 text-white border-blue-600 hover:bg-blue-700"
+                    : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
                 }`}
               >
                 {page}
               </button>
-            ),
-          )}
+            );
+          })}
         </div>
 
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => onPageChange(currentPage + 1)}
-          disabled={currentPage === totalPages}
+          onClick={() => onPageChange(current + 1)}
+          disabled={current === totalPages}
           aria-label="Next page"
         >
           <span className="hidden sm:inline">Next</span>

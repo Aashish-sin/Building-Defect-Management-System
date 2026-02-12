@@ -61,6 +61,17 @@ cp .env.example .env
 # Edit .env with your configuration
 ```
 
+## .env Keys
+
+### Backend (.env)
+
+- `DATABASE_URL`: PostgreSQL connection string. Example: `postgresql://user:password@localhost:5432/building_defect_db`
+- `SECRET_KEY`: Flask secret used for JWT signing and session security
+
+### Frontend (Frontend/.env)
+
+- `VITE_API_URL`: API base URL used by the frontend. Defaults to `http://localhost:5000/api` if not set.
+
 5. Initialize the database
 
 ```bash
@@ -178,6 +189,33 @@ The API will be available at `http://localhost:5000`
 ## Frontend Repository
 
 https://github.com/Aashish-sin/Building-Defect-Management-System/tree/main/Frontend
+
+## Component Tree
+
+```text
+App
+├── Auth
+└── Layout
+    ├── TopNav
+    ├── Sidebar
+    ├── MobileNav
+    └── [Routes]
+        ├── Dashboard
+        │   └── Analytics
+        ├── DefectList
+        │   ├── SearchInput
+        │   └── Pagination
+        ├── DefectDetail
+        ├── DefectForm
+        ├── Buildings
+        └── Users
+
+Shared UI Components:
+├── Alert, Badge, Button, Input
+├── LoadingSkeleton, LoadingSpinner
+├── Modal, Pagination, PasswordInput
+├── SearchInput, Select, Textarea, Toast
+```
 
 ## Future Updates
 

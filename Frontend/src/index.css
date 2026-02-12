@@ -1244,3 +1244,23 @@ html {
 body.nav-dropdown-open #main-content {
   padding-top: 16rem;
 }
+
+/* Add borders to all tables */
+table {
+  border-collapse: collapse;
+  width: 100%;
+  border: 1px solid #e5e7eb; /* Light gray border */
+}
+
+th,
+td {
+  border: 1px solid #e5e7eb;
+  padding: 12px;
+  text-align: left;
+}
+
+/* Optional: Add a background to the header */
+thead tr {
+  background-color: #f9fafb;
+  border-bottom: 2px solid #e5e7eb;
+}

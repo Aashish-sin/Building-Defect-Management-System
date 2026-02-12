@@ -2,6 +2,7 @@ from flask import Flask
 from flask_cors import CORS
 import os
 from dotenv import load_dotenv
+from sqlalchemy import text
 
 load_dotenv()
 
@@ -43,6 +44,19 @@ def create_app():
     @app.route('/')
     def index():
         return "<h1>Defect Management API</h1>"
+
+    @app.cli.command("sync-sequences")
+    def sync_sequences():
+        """Fixes the PostgreSQL sequences to match the max ID in tables."""
+        tables = ['users', 'refresh_tokens', 'buildings', 'defects', 'defect_comments']
+        for table in tables:
+            try:
+                sql = text(f"SELECT setval(pg_get_serial_sequence('{table}', 'id'), coalesce(max(id)+1, 1), false) FROM {table};")
+                db.session.execute(sql)
+                db.session.commit()
+                print(f"Synced sequence for {table}")
+            except Exception as e:
+                print(f"Error syncing {table}: {e}")
 
     return app
 
